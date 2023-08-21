@@ -1,0 +1,7 @@
+import "../RISCVBase.core_desc"
+
+InstructionSet XCoreVBitmanip extends RISCVBase {
+    instructions {
+
+    }
+}
