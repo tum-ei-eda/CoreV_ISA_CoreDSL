@@ -1,4 +1,4 @@
-import "../RISCVBase.core_desc"
+import "../rv_base/RISCVBase.core_desc"
 
 InstructionSet XCoreVHwlp extends RISCVBase {  // TODO: zicsr!
     instructions {
