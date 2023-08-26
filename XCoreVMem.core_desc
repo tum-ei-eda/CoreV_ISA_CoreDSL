@@ -180,7 +180,7 @@ InstructionSet XCoreVMem extends RISCVBase {
             assembly:"{name(rs2)}, {name(rs3)}({name(rs1)})";
             behavior: {
                 unsigned<XLEN> store_address = X[rs1];  // TODO: signed?
-								MEM[store_address] = (signed<8>)X[rs2];
+                                MEM[store_address] = (signed<8>)X[rs2];
                 X[rs1] += (signed)X[rs3];
             }
         }
@@ -189,7 +189,7 @@ InstructionSet XCoreVMem extends RISCVBase {
             assembly:"{name(rs2)}, {name(rs3)}({name(rs1)})";
             behavior: {
                 unsigned<XLEN> store_address = X[rs1];  // TODO: signed?
-								MEM[store_address] = (signed<16>)X[rs2];
+                                MEM[store_address] = (signed<16>)X[rs2];
                 X[rs1] += (signed)X[rs3];
             }
         }
@@ -198,7 +198,7 @@ InstructionSet XCoreVMem extends RISCVBase {
             assembly:"{name(rs2)}, {name(rs3)}({name(rs1)})";
             behavior: {
                 unsigned<XLEN> store_address = X[rs1];  // TODO: signed?
-								MEM[store_address] = (signed<32>)X[rs2];
+                                MEM[store_address] = (signed<32>)X[rs2];
                 X[rs1] += (signed)X[rs3];
             }
         }
@@ -207,7 +207,7 @@ InstructionSet XCoreVMem extends RISCVBase {
             assembly:"{name(rs2)}, {name(rs3)}({name(rs1)})";
             behavior: {
                 unsigned<XLEN> store_address = X[rs1] + X[rs3];  // TODO: signed?
-								MEM[store_address] = (signed<8>)X[rs2];
+                                MEM[store_address] = (signed<8>)X[rs2];
             }
         }
         CV_SH_rr {
@@ -215,7 +215,7 @@ InstructionSet XCoreVMem extends RISCVBase {
             assembly:"{name(rs2)}, {name(rs3)}({name(rs1)})";
             behavior: {
                 unsigned<XLEN> store_address = X[rs1] + X[rs3];  // TODO: signed?
-								MEM[store_address] = (signed<16>)X[rs2];
+                                MEM[store_address] = (signed<16>)X[rs2];
             }
         }
         CV_SW_rr {
@@ -223,7 +223,7 @@ InstructionSet XCoreVMem extends RISCVBase {
             assembly:"{name(rs2)}, {name(rs3)}({name(rs1)})";
             behavior: {
                 unsigned<XLEN> store_address = X[rs1] + X[rs3];  // TODO: signed?
-								MEM[store_address] = (signed<32>)X[rs2];
+                                MEM[store_address] = (signed<32>)X[rs2];
             }
         }
     }
