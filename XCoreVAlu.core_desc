@@ -103,7 +103,7 @@ InstructionSet XCoreVAlu extends RISCVBase {
         // SOURCE FILE: instr_srcs/XCoreVALU2.txt
         CV_CLIP {
             encoding: 7'b0111000 :: Iuimm5[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
-            assembly: {"cv.clip", "{name(rd)}, {name(rs1)}, {Is2}" };
+            assembly: {"cv.clip", "{name(rd)}, {name(rs1)}, {Iuimm5}" };
             behavior: {
                 if (rd != 0) {
                     signed a = (Iuimm5) ? -(1 << (Iuimm5 - 1)) : -1;
@@ -116,7 +116,7 @@ InstructionSet XCoreVAlu extends RISCVBase {
         }
         CV_CLIPU {
             encoding: 7'b0111001 :: Iuimm5[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
-            assembly: {"cv.clipu", "{name(rd)}, {name(rs1)}, {Is2}" };
+            assembly: {"cv.clipu", "{name(rd)}, {name(rs1)}, {Iuimm5}" };
             behavior: {
                 if (rd != 0) {
                     signed a = 0;
@@ -156,7 +156,7 @@ InstructionSet XCoreVAlu extends RISCVBase {
         // SOURCE FILE: instr_srcs/XCoreVALU3.txt
         CV_ADDN {
             encoding: 2'b00 :: Luimm5[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b010 :: rd[4:0] :: 7'b1011011;
-            assembly: {"cv.addN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}" };
+            assembly: {"cv.addN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Luimm5}" };
             behavior: {
                 if (rd != 0) {
                     X[rd] = (signed)(X[rs1] + X[rs2][31: 0]) >> Luimm5;
@@ -165,7 +165,7 @@ InstructionSet XCoreVAlu extends RISCVBase {
         }
         CV_ADDUN {
             encoding: 2'b01 :: Luimm5[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b010 :: rd[4:0] :: 7'b1011011;
-            assembly: {"cv.adduN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}" };
+            assembly: {"cv.adduN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Luimm5}" };
             behavior: {
                 if (rd != 0) {
                     X[rd] = (unsigned)(X[rs1] + X[rs2][31: 0]) >> Luimm5;
@@ -174,7 +174,7 @@ InstructionSet XCoreVAlu extends RISCVBase {
         }
         CV_ADDRN {
             encoding: 2'b10 :: Luimm5[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b010 :: rd[4:0] :: 7'b1011011;
-            assembly: {"cv.addRN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}" };
+            assembly: {"cv.addRN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Luimm5}" };
             behavior: {
                 if (rd != 0) {
                     X[rd] = (signed)(X[rs1] + X[rs2][31: 0] + (1 << (Luimm5 - 1))) >> Luimm5;
@@ -183,7 +183,7 @@ InstructionSet XCoreVAlu extends RISCVBase {
         }
         CV_ADDURN {
             encoding: 2'b11 :: Luimm5[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b010 :: rd[4:0] :: 7'b1011011;
-            assembly: {"cv.adduRN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}" };
+            assembly: {"cv.adduRN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Luimm5}" };
             behavior: {
                 if (rd != 0) {
                     X[rd] = (unsigned)(X[rs1] + X[rs2][31: 0] + (1 << (Luimm5 - 1))) >> Luimm5;
@@ -192,7 +192,7 @@ InstructionSet XCoreVAlu extends RISCVBase {
         }
         CV_SUBN {
             encoding: 2'b00 :: Luimm5[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b1011011;
-            assembly: {"cv.subN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}" };
+            assembly: {"cv.subN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Luimm5}" };
             behavior: {
                 if (rd != 0) {
                     X[rd] = (signed)(X[rs1] - X[rs2][31: 0]) >> Luimm5;
@@ -201,7 +201,7 @@ InstructionSet XCoreVAlu extends RISCVBase {
         }
         CV_SUBUN {
             encoding: 2'b01 :: Luimm5[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b1011011;
-            assembly: {"cv.subuN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}" };
+            assembly: {"cv.subuN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Luimm5}" };
             behavior: {
                 if (rd != 0) {
                     X[rd] = (unsigned)(X[rs1] - X[rs2][31: 0]) >> Luimm5;
@@ -210,7 +210,7 @@ InstructionSet XCoreVAlu extends RISCVBase {
         }
         CV_SUBRN {
             encoding: 2'b10 :: Luimm5[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b1011011;
-            assembly: {"cv.subRN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}" };
+            assembly: {"cv.subRN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Luimm5}" };
             behavior: {
                 if (rd != 0) {
                     X[rd] = (signed)(X[rs1] - X[rs2][31: 0] + (1 << (Luimm5 - 1))) >> Luimm5;
@@ -219,7 +219,7 @@ InstructionSet XCoreVAlu extends RISCVBase {
         }
         CV_SUBURN {
             encoding: 2'b11 :: Luimm5[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b1011011;
-            assembly: {"cv.subuRN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}" };
+            assembly: {"cv.subuRN", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Luimm5}" };
             behavior: {
                 if (rd != 0) {
                     X[rd] = (unsigned)(X[rs1] - X[rs2][31: 0] + (1 << (Luimm5 - 1))) >> Luimm5;
