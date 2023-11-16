@@ -12,8 +12,8 @@ InstructionSet XCoreVHwlp extends RV32I {
     }
 
     always {
-        ZOL_0 {
-            if (PC == lpend_0 && lpcount_0 != 1) {
+        ZOL_0 [[no_cont]] [[cond]] {
+            if (PC == lpend_0 && lpcount_0 > 1) {
                 if (lpend_0 - lpstart_0 < 8) {
                     raise(0,2);
                 }
@@ -21,8 +21,8 @@ InstructionSet XCoreVHwlp extends RV32I {
                 lpcount_0 -= 1;
             }
         }
-        ZOL_1 {
-            if (PC == lpend_1 && lpcount_1 != 1) {
+        ZOL_1 [[no_cont]] [[cond]] {
+            if (PC == lpend_1 && lpcount_1 > 1) {
                 if (lpend_1 - lpstart_1 < 8) {
                     raise(0,2);
                 }
@@ -160,8 +160,10 @@ InstructionSet XCoreVHwlp extends RV32I {
                     }
                     lpcount_1 = (unsigned<32>) uimmL;
                 }
-                if (lpend_1 < lpend_0 + 8) {
-                    raise(0,2);
+                if (lpcount_1 > 0) {
+                    if (lpend_1 < lpend_0 + 8) {
+                        raise(0,2);
+                    }
                 }
             }
         }
@@ -195,8 +197,10 @@ InstructionSet XCoreVHwlp extends RV32I {
                     }
                     lpcount_1 = X[rs1];
                 }
-                if (lpend_1 < lpend_0 + 8) {
-                    raise(0,2);
+                if (lpcount_1 > 0) {
+                    if (lpend_1 < lpend_0 + 8) {
+                        raise(0,2);
+                    }
                 }
             }
         }
