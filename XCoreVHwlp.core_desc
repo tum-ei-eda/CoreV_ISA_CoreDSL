@@ -206,3 +206,210 @@ InstructionSet XCoreVHwlp extends RV32I {
         }
     }
 }
+
+InstructionSet XCoreVHwlpV0 extends RV32I {
+    architectural_state {
+        unsigned<32> &lpstart_0 = CSR[0xCC0];
+        unsigned<32> &lpend_0   = CSR[0xCC1];
+        unsigned<32> &lpcount_0 = CSR[0xCC2];
+        unsigned<32> &lpstart_1 = CSR[0xCC4];
+        unsigned<32> &lpend_1   = CSR[0xCC5];
+        unsigned<32> &lpcount_1 = CSR[0xCC6];
+        unsigned int HWLP_INSTR_ALIGNMENT = 4;
+    }
+
+    always {
+        ZOL_0 [[no_cont]] [[cond]] {
+            if (PC == lpend_0 && lpcount_0 > 1) {
+                if (lpend_0 - lpstart_0 < 8) {
+                    raise(0,2);
+                }
+                PC = lpstart_0;
+                lpcount_0 -= 1;
+            }
+        }
+        ZOL_1 [[no_cont]] [[cond]] {
+            if (PC == lpend_1 && lpcount_1 > 1) {
+                if (lpend_1 - lpstart_1 < 8) {
+                    raise(0,2);
+                }
+                PC = lpstart_1;
+                lpcount_1 -= 1;
+            }
+        }
+    }
+
+    instructions {
+        CV_STARTI {
+            encoding: uimmL[11:0] :: rs1[4:0] :: 3'b100 :: 4'b0000 :: L[0:0] :: 7'b0101011;
+            assembly: "{L}, {uimmL}";
+            behavior: {
+                if (L == 0) {
+                    if (lpstart_0 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpstart_0 = (unsigned<32>)(PC + (uimmL << 2));
+                    }
+                } else {
+                    if (lpstart_1 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpstart_1 = (unsigned<32>)(PC + (uimmL << 2));
+                    }
+                }
+            }
+        }
+        CV_START {
+            encoding: 12'b000000000000 :: rs1[4:0] :: 3'b100 :: 4'b0001 :: L[0:0] :: 7'b0101011;
+            assembly: "{L}, {name(rs1)}";
+            behavior: {
+                if (L == 0) {
+                    if (lpstart_0 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpstart_0 = X[rs1];
+                    }
+                } else {
+                    if (lpstart_1 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpstart_1 = X[rs1];
+                    }
+                }
+            }
+        }
+        CV_ENDI {
+            encoding: uimmL[11:0] :: rs1[4:0] :: 3'b100 :: 4'b0010 :: L[0:0] :: 7'b0101011;
+            assembly: "{L}, {name(rs1)}";
+            behavior: {
+                if (L == 0) {
+                    if (lpend_0 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpend_0 = (unsigned<32>)(PC + (uimmL << 2));
+                    }
+                } else {
+                    if (lpend_1 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpend_1 = (unsigned<32>)(PC + (uimmL << 2));
+                    }
+                }
+            }
+        }
+        CV_END {
+            encoding: 12'b000000000000 :: rs1[4:0] :: 3'b100 :: 4'b0011 :: L[0:0] :: 7'b0101011;
+            assembly: "{L}, {name(rs1)}";
+            behavior: {
+                if (L == 0) {
+                    if (lpend_0 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpend_0 = X[rs1];
+                    }
+                } else {
+                    if (lpend_1 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpend_1 = X[rs1];
+                    }
+                }
+            }
+        }
+        CV_COUNTI{
+            encoding: uimmL[11:0] :: 5'b00000 :: 3'b100 :: 4'b0100 :: L[0:0] :: 7'b0101011;
+            assembly: "{L}, {uimmL}";
+            behavior: {
+                if (L == 0) {
+                    lpcount_0 = (unsigned<32>)uimmL;
+                } else {
+                    lpcount_1 = (unsigned<32>)uimmL;
+                }
+              }
+        }
+        CV_COUNT{
+            encoding: 12'b000000000000 :: rs1[4:0] :: 3'b100 :: 4'b0101 :: L[0:0] :: 7'b0101011;
+            assembly: "{L}, {name(rs1)}";
+            behavior: {
+                if (L == 0) {
+                    lpcount_0 = X[rs1];
+                } else{
+                    lpcount_1 = X[rs1];
+                }
+            }
+        }
+        CV_SETUPI {
+            encoding: uimmL[11:0] :: uimmS[4:0] :: 3'b100 :: 4'b0110 :: L[0:0] :: 7'b0101011;
+            assembly: "{L}, {uimmL}, {uimmS}";
+            behavior: {
+                if (L == 0) {
+                    if (lpstart_0 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpstart_0 = (unsigned<32>)(PC + 4);
+                    }
+                    if (lpend_0 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpend_0 = (unsigned<32>)(PC + (uimmS << 2));
+                    }
+                    lpcount_0 = (unsigned<32>) uimmL;
+                } else {
+                    if (lpstart_1 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpstart_1 = (unsigned<32>)(PC + 4);
+                    }
+                    if (lpend_1 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpend_1 = (unsigned<32>)(PC + (uimmS << 2));
+                    }
+                    lpcount_1 = (unsigned<32>) uimmL;
+                }
+                if (lpcount_1 > 0) {
+                    if (lpend_1 < lpend_0 + 8) {
+                        raise(0,2);
+                    }
+                }
+            }
+        }
+        CV_SETUP {
+            encoding: uimmL[11:0] :: rs1[4:0] :: 3'b100 :: 4'b0111 :: L[0:0] :: 7'b0101011;
+            assembly: "{L}, {name(rs1)}, {uimmL}";
+            behavior: {
+                if (L == 0) {
+                    if (lpstart_0 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpstart_0 = (unsigned<32>)(PC + 4);
+                    }
+                    if (lpend_0 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpend_0 = (unsigned<32>)(PC + (uimmL << 2));
+                    }
+                    lpcount_0 = X[rs1];
+                } else {
+                    if (lpstart_1 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpstart_1 = (unsigned<32>)(PC + 4);
+                    }
+
+                    if (lpend_1 % HWLP_INSTR_ALIGNMENT) {
+                        raise(0,0);
+                    } else {
+                        lpend_1 = (unsigned<32>)(PC + (uimmL << 2));
+                    }
+                    lpcount_1 = X[rs1];
+                }
+                if (lpcount_1 > 0) {
+                    if (lpend_1 < lpend_0 + 8) {
+                        raise(0,2);
+                    }
+                }
+            }
+        }
+    }
+}
