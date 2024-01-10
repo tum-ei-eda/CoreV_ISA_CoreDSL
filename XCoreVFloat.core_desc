@@ -1,0 +1,6 @@
+import "XCoreVFloatMac.core_desc"
+// import "XCoreVMem.core_desc"
+import "XCoreVFloatAlu.core_desc"
+
+InstructionSet XCoreVFloat extends XCoreVFloatMac, XCoreVFloatMem, XCoreVFloatAlu {
+}
