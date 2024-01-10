@@ -1,0 +1,15 @@
+InstructionSet XCoreVSimdExtra extends RISCVBase {
+    instructions {
+        // SIMD Sign Extensions
+        CV_??? {
+            encoding: 5'b00000 :: 1'b0 :: 1'b0 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1111011;
+            assembly: {"cv.add.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
+            behavior: {
+                if (rd != 0) {
+                    X[rd][15: 0] = (X[rs1][15: 0] + X[rs2][15: 0])[15:0];
+                    X[rd][31:16] = (X[rs1][31:16] + X[rs2][31:16])[15:0];
+                }
+            }
+        }
+    }
+}

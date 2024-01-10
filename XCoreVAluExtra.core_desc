@@ -1,0 +1,4 @@
+InstructionSet XCoreVAluExtra extends RISCVBase {
+    instructions {
+    }
+}

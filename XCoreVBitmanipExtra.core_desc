@@ -1,0 +1,14 @@
+InstructionSet XCoreVBitmanipExtra extends RISCVBase {
+    instructions {
+        // ROTATIONS ETC?
+        CV_??? {
+            encoding: 2'b00 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
+            assembly: {"cv.extract", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
+            behavior: {
+                if (rd != 0) {
+                    X[rd] = (signed<32>)(((X[rs1] >> Iuimm5) & ((2 << Luimm5) - 1)) << (31 - Luimm5)) >> (31 - Luimm5);
+                }
+            }
+        }
+    }
+}

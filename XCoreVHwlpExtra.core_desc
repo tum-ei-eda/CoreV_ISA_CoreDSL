@@ -1,0 +1,12 @@
+import "../rv_base/RV32I.core_desc"
+
+InstructionSet XCoreVHwlpExtra extends RV32I {
+    architectural_state {
+    }
+
+    always {
+    }
+
+    instructions {
+    }
+}
