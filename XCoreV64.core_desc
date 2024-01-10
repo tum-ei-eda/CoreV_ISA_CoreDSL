@@ -1,0 +1,10 @@
+import "XCoreV64Mac.core_desc"
+import "XCoreV64Mem.core_desc"
+import "XCoreV64BranchImmediate.core_desc"
+import "XCoreV64Alu.core_desc"
+import "XCoreV64Bitmanip.core_desc"
+import "XCoreV64Simd.core_desc"
+// import "XCoreV64Hwlp.core_desc"
+
+InstructionSet XCoreV54 extends XCoreV64Mac, XCoreV64Mem, XCoreV64BranchImmediate, XCoreV64Alu, XCoreV64Bitmanip, XCoreV64Simd {
+}
