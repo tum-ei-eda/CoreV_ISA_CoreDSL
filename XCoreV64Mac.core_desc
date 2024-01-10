@@ -1,6 +1,6 @@
 import "../rv_base/RISCVBase.core_desc"
 
-InstructionSet XCoreVMac extends RISCVBase {
+InstructionSet XCoreV64Mac extends RISCVBase {
     instructions {
         // 32-Bit x 32-Bit Multiplication Operations (Signed)
         CV_MAC {

@@ -1,24 +1,24 @@
-InstructionSet XCoreVBitmanip extends RISCVBase {
+InstructionSet XCoreV64Bitmanip extends RISCVBase {
     instructions {
         // SOURCE FILE: instr_srcs/XCoreVALU_BitmanipI.txt
-        CV_EXTRACT {
-            encoding: 2'b00 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
-            assembly: {"cv.extract", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
-            behavior: {
-                if (rd != 0) {
-                    X[rd] = (signed<32>)(((X[rs1] >> Iuimm5) & ((2 << Luimm5) - 1)) << (31 - Luimm5)) >> (31 - Luimm5);
-                }
-            }
-        }
-        CV_EXTRACTU {
-            encoding: 2'b01 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
-            assembly: {"cv.extractu", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
-            behavior: {
-                if (rd != 0) {
-                    X[rd] = (unsigned)((X[rs1] >> Iuimm5) & ((2 << Luimm5) - 1));
-                }
-            }
-        }
+        // CV_EXTRACT {
+        //     encoding: 2'b00 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
+        //     assembly: {"cv.extract", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
+        //     behavior: {
+        //         if (rd != 0) {
+        //             X[rd] = (signed<32>)(((X[rs1] >> Iuimm5) & ((2 << Luimm5) - 1)) << (31 - Luimm5)) >> (31 - Luimm5);
+        //         }
+        //     }
+        // }
+        // CV_EXTRACTU {
+        //     encoding: 2'b01 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
+        //     assembly: {"cv.extractu", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
+        //     behavior: {
+        //         if (rd != 0) {
+        //             X[rd] = (unsigned)((X[rs1] >> Iuimm5) & ((2 << Luimm5) - 1));
+        //         }
+        //     }
+        // }
         // CV_INSERT {
         //     encoding: 2'b10 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
         //     assembly: {"cv.insert", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
