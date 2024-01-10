@@ -1,6 +1,12 @@
 InstructionSet XCoreVSimdExtra extends RISCVBase {
+
+/*
+SIMD Sign Extensions (standalone) - signed unpacking from pext draft
+SIMD 16 x 8 bit stuff or reverse (included sign extend)
+not dotproducts proposed by mathis
+sdotp + load/store probably to complex (needs arch state?)
+*/
     instructions {
-        // SIMD Sign Extensions
         CV_??? {
             encoding: 5'b00000 :: 1'b0 :: 1'b0 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.add.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };

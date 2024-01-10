@@ -1,4 +1,9 @@
 InstructionSet XCoreVAluExtra extends RISCVBase {
+/*
+maybe saturating add/sub (16 bit/ 8 bit?)
+64 bit add/sub using register pairs on rv32
+optional: staturation with overflow detection?
+*/
     instructions {
     }
 }

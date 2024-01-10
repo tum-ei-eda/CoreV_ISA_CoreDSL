@@ -1,4 +1,11 @@
 InstructionSet XCoreVBitmanipExtra extends RISCVBase {
+/*
+{ISD::ROTL, ISD::ROTR}, XLenVT
+ISD::BSWAP, XLenVT
+ISD::BITREVERSE, XLenVT
+{ISD::CTTZ, ISD::CTPOP}, XLenVT
+ISD::CTLZ, XLenVT
+*/
     instructions {
         // ROTATIONS ETC?
         CV_??? {

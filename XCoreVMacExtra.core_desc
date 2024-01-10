@@ -1,6 +1,13 @@
 import "../rv_base/RISCVBase.core_desc"
 
 InstructionSet XCoreVMacExtra extends RISCVBase {
+/*
+ISD::MUL, MVT::i64
+Try out with register pairs? SLL as well?
+how about 32x16 bit macs
+and 8bit?
+mac with extra acc register (eventually widening?)
+*/
     instructions {
     }
 }

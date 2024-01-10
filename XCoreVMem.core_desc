@@ -1,6 +1,14 @@
 import "../rv_base/RISCVBase.core_desc"
 
 InstructionSet XCoreVMem extends RISCVBase {
+/*
+probably not worth is
+{ISD::EXTLOAD, ISD::SEXTLOAD, ISD::ZEXTLOAD}, XLenVT, MVT::i1
+{ISD::EXTLOAD, ISD::SEXTLOAD, ISD::ZEXTLOAD}, MVT::i32 MVT::i1,
+
+but:
+compare pre inc vs post inc
+*/
     instructions {
         // ?
         CV_LB_ri_inc {

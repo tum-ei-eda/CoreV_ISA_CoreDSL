@@ -1,6 +1,14 @@
 import "../rv_base/RISCVBase.core_desc"
 
 InstructionSet XCoreVBranchImmediateExtra extends RISCVBase {
+/*
+ISD::SETLE, XLenVT
+ISD::SETGE, XLenVT
+ISD::SETULE, XLenVT
+ISD::SETUGE, XLenVT
+
++ register branches as well?
+*/
     instructions {
         CV_BLTIMM [[no_cont]] [[cond]] {  // USW!
             encoding: imm[12:12] ::imm[10:5] :: simm5[4:0] :: rs1[4:0] :: 3'b110 :: imm[4:1] :: imm[11:11] :: 7'b0001011;
