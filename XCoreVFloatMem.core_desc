@@ -1,10 +1,10 @@
-import "../rv_base/RISCVBase.core_desc"
+import "../rv_base/RVF.core_desc"
 
 InstructionSet XCoreVFloatMem extends RV32F {
     instructions {
         // ?
         CVF_FLW_ri_inc {
-            encoding: imm12[11:0] :: rs1[4:0] :: 3'b010 :: rd[4:0] :: 7'b0001011;
+            encoding: imm12[11:0] :: rs1[4:0] :: 3'b010 :: rd[4:0] :: 7'b0001011;  // TODO
             assembly: {"cvf.flw", "{name(rd)}, {imm12}({name(rs1)}!)"};
             behavior: {
                 unsigned<XLEN> load_address = X[rs1];
@@ -14,7 +14,7 @@ InstructionSet XCoreVFloatMem extends RV32F {
             }
         }
         CVF_FLW_rr_inc {
-            encoding: 7'b0000010 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+            encoding: 7'b0000010 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;  // TODO
             assembly: {"cvf.flw", "{name(rd)}, {name(rs2)}({name(rs1)})"};
             behavior: {
                 unsigned<XLEN> load_address = X[rs1];  // TODO: signed?
@@ -24,7 +24,7 @@ InstructionSet XCoreVFloatMem extends RV32F {
             }
         }
         CVF_FLW_rr {
-            encoding: 7'b0000110 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+            encoding: 7'b0000110 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;  // TOO
             assembly: {"cvf.flh", "{name(rd)}, {name(rs2)}({name(rs1)})"};
             behavior: {
                 unsigned<XLEN> load_address = X[rs1] + X[rs2];  // TODO: signed?
@@ -33,7 +33,7 @@ InstructionSet XCoreVFloatMem extends RV32F {
             }
         }
         CVF_FSW_ri_inc {
-            encoding: imm12[11:5] :: rs2[4:0] :: rs1[4:0] :: 3'b010 :: imm12[4:0] :: 7'b0101011;
+            encoding: imm12[11:5] :: rs2[4:0] :: rs1[4:0] :: 3'b010 :: imm12[4:0] :: 7'b0101011;  // TODO
             assembly: {"cvf.fsw", "{name(rs2)}, {imm12}({name(rs1)}!)"};
             behavior: {
                 unsigned<XLEN> store_address = X[rs1];
@@ -42,7 +42,7 @@ InstructionSet XCoreVFloatMem extends RV32F {
             }
         }
         CVF_FSW_rr_inc {
-            encoding: 7'b0010010 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rs3[4:0] :: 7'b0101011;
+            encoding: 7'b0010010 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rs3[4:0] :: 7'b0101011;  // TODO
             assembly: {"cvf.fsw", "{name(rs2)}, {name(rs3)}({name(rs1)})"};
             behavior: {
                 unsigned<XLEN> store_address = X[rs1];  // TODO: signed?
@@ -51,7 +51,7 @@ InstructionSet XCoreVFloatMem extends RV32F {
             }
         }
         CVF_FSW_rr {
-            encoding: 7'b0010110 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rs3[4:0] :: 7'b0101011;
+            encoding: 7'b0010110 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rs3[4:0] :: 7'b0101011;  // TODO
             assembly: {"cvf.fsw", "{name(rs2)}, {name(rs3)}({name(rs1)})"};
             behavior: {
                 unsigned<XLEN> store_address = X[rs1] + X[rs3];  // TODO: signed?

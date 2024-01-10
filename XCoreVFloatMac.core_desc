@@ -1,6 +1,6 @@
-import "../rv_base/RISCVBase.core_desc"
+import "../rv_base/RVF.core_desc"
 
-InstructionSet XCoreVMac extends RISCVBase {
+InstructionSet XCoreVMac extends RV32F {
     functions {
         extern unsigned<32> fmac_s(unsigned<32>, unsigned<32>);
         extern unsigned<32> fmsu_s(unsigned<32>, unsigned<32>);

@@ -1,6 +1,6 @@
-import "../rv_base/RISCVBase.core_desc"
+import "../rv_base/RVF.core_desc"
 
-InstructionSet XCoreVAlu extends RISCVBase {
+InstructionSet XCoreVAlu extends RV32F {
     functions {
         extern unsigned<32> fabs_s(unsigned<32>, unsigned<32>);
         extern unsigned<1> flet_s(unsigned<32>, unsigned<32>);
