@@ -8,12 +8,11 @@ InstructionSet XCoreVBranchImmediate extends RV32I {
             encoding: imm[12:12] ::imm[10:5] :: simm5[4:0] :: rs1[4:0] :: 3'b110 :: imm[4:1] :: imm[11:11] :: 7'b0001011;
             assembly: {"cv.beqimm", "{name(rs1)}, {simm5:#0x}, {imm:#0x}"};
             behavior: {
+                if(imm % INSTR_ALIGNMENT) {
+                    raise(0, 0);
+                }
                 if (X[rs1 % RFS] == (signed)simm5) {
-                    if(imm % INSTR_ALIGNMENT) {
-                        raise(0, 0);
-                    } else {
-                        PC = PC + (signed)imm;
-                    }
+                    PC = PC + (signed)imm;
                 }
             }
         }
@@ -23,12 +22,11 @@ InstructionSet XCoreVBranchImmediate extends RV32I {
             // operands: signed<5> simm5, signed<13> imm, unsigned<5> rs1;
             // constraints: { field in [1, 2, 4, 8] && imm % INSTR_ALIGNMENT == 0; }
             behavior: {
+                if(imm % INSTR_ALIGNMENT) {
+                    raise(0, 0);
+                }
                 if (X[rs1 % RFS] != (signed)simm5) {
-                    if(imm % INSTR_ALIGNMENT) {
-                        raise(0, 0);
-                    } else {
-                        PC = PC + (signed)imm;
-                    }
+                    PC = PC + (signed)imm;
                 }
             }
         }
