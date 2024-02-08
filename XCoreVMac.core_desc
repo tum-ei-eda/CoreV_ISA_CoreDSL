@@ -9,8 +9,8 @@ InstructionSet XCoreVMac extends RV32I {
             encoding: 7'b1001000 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
             assembly: {"cv.mac", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {
-              signed<65> result = (signed)X[rs1] * (signed)X[rs2] + (signed)X[rd];
-              // signed<64> result = (signed)X[rs1] * (signed)X[rs2] + (signed)X[rd];
+              // signed<65> result = (signed)X[rs1] * (signed)X[rs2] + (signed)X[rd];
+              signed<64> result = (signed)X[rs1] * (signed)X[rs2] + (signed)X[rd];
               // if(rd != 0) X[rd] = result[31:0];
               if(rd != 0) X[rd] = (unsigned<32>)result;
             }
