@@ -1,6 +1,8 @@
-import "../rv_base/RISCVBase.core_desc"
+// import "../rv_base/RISCVBase.core_desc"
+import "../rv_base/RV32I.core_desc"
 
-InstructionSet XCoreVMac extends RISCVBase {
+// InstructionSet XCoreVMac extends RISCVBase {
+InstructionSet XCoreVMac extends RV32I {
     instructions {
         // 32-Bit x 32-Bit Multiplication Operations (Signed)
         CV_MAC {

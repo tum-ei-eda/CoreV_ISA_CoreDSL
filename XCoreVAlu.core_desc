@@ -1,4 +1,8 @@
-InstructionSet XCoreVAlu extends RISCVBase {
+// import "../rv_base/RISCVBase.core_desc"
+import "../rv_base/RV32I.core_desc"
+
+// InstructionSet XCoreVAlu extends RISCVBase {
+InstructionSet XCoreVAlu extends RV32I {
     instructions {
         // SOURCE FILE: instr_srcs/XCoreVALU1.txt
         CV_ABS {

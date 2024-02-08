@@ -1,6 +1,8 @@
-import "../rv_base/RISCVBase.core_desc"
+// import "../rv_base/RISCVBase.core_desc"
+import "../rv_base/RV32I.core_desc"
 
-InstructionSet XCoreVMem extends RISCVBase {
+// InstructionSet XCoreVMem extends RISCVBase {
+InstructionSet XCoreVMem extends RV32I {
     instructions {
         // ?
         CV_LB_ri_inc {
