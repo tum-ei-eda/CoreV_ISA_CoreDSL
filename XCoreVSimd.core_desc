@@ -1,4 +1,8 @@
-InstructionSet XCoreVSimd extends RISCVBase {
+// import "../rv_base/RISCVBase.core_desc"
+import "../rv_base/RV32I.core_desc"
+
+// InstructionSet XCoreVSimd extends RISCVBase {
+InstructionSet XCoreVSimd extends RV32I {
     instructions {
         // SOURCE FILE: instr_srcs/XCoreVSIMD_ALU.txt
         CV_ADD_H {
