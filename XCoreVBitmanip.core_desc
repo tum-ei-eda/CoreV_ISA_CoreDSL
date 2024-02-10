@@ -1,4 +1,8 @@
-InstructionSet XCoreVBitmanip extends RISCVBase {
+// import "../rv_base/RISCVBase.core_desc"
+import "../rv_base/RV32I.core_desc"
+
+// InstructionSet XCoreVBitmanip extends RISCVBase {
+InstructionSet XCoreVBitmanip extends RV32I {
     instructions {
         // SOURCE FILE: instr_srcs/XCoreVALU_BitmanipI.txt
         CV_EXTRACT {
