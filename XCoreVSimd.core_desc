@@ -1190,7 +1190,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotup.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][15: 0] * (unsigned)X[rs2][15: 0]) +
                     ((unsigned)X[rs1][31:16] * (unsigned)X[rs2][31:16])));
             }
@@ -1200,7 +1200,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotup.sc.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][15: 0] * (unsigned)X[rs2][15:0]) +
                     ((unsigned)X[rs1][31:16] * (unsigned)X[rs2][15:0])));
             }
@@ -1210,7 +1210,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotup.sci.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][15: 0] * (unsigned)((unsigned<16>)((signed)Imm6))) +
                     ((unsigned)X[rs1][31:16] * (unsigned)((unsigned<16>)((signed)Imm6)))));
             }
@@ -1220,7 +1220,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotup.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][ 7: 0] * (unsigned)X[rs2][ 7: 0]) +
                     ((unsigned)X[rs1][15: 8] * (unsigned)X[rs2][15: 8]) +
                     ((unsigned)X[rs1][23:16] * (unsigned)X[rs2][23:16]) +
@@ -1232,7 +1232,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotup.sc.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][ 7: 0] * (unsigned)X[rs2][7:0]) +
                     ((unsigned)X[rs1][15: 8] * (unsigned)X[rs2][7:0]) +
                     ((unsigned)X[rs1][23:16] * (unsigned)X[rs2][7:0]) +
@@ -1244,7 +1244,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotup.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][ 7: 0] * (unsigned)((unsigned<8>)((signed)Imm6))) +
                     ((unsigned)X[rs1][15: 8] * (unsigned)((unsigned<8>)((signed)Imm6))) +
                     ((unsigned)X[rs1][23:16] * (unsigned)((unsigned<8>)((signed)Imm6))) +
@@ -1256,7 +1256,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotusp.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][15: 0] * (signed)X[rs2][15: 0]) +
                     ((unsigned)X[rs1][31:16] * (signed)X[rs2][31:16])));
             }
@@ -1266,7 +1266,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotusp.sc.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][15: 0] * (signed)X[rs2][15:0]) +
                     ((unsigned)X[rs1][31:16] * (signed)X[rs2][15:0])));
             }
@@ -1276,7 +1276,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotusp.sci.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][15: 0] * (signed)((unsigned<16>)((signed)Imm6))) +
                     ((unsigned)X[rs1][31:16] * (signed)((unsigned<16>)((signed)Imm6)))));
             }
@@ -1286,7 +1286,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotusp.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][ 7: 0] * (signed)X[rs2][ 7: 0]) +
                     ((unsigned)X[rs1][15: 8] * (signed)X[rs2][15: 8]) +
                     ((unsigned)X[rs1][23:16] * (signed)X[rs2][23:16]) +
@@ -1298,7 +1298,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotusp.sc.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][ 7: 0] * (signed)X[rs2][7:0]) +
                     ((unsigned)X[rs1][15: 8] * (signed)X[rs2][7:0]) +
                     ((unsigned)X[rs1][23:16] * (signed)X[rs2][7:0]) +
@@ -1310,7 +1310,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotusp.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][ 7: 0] * (signed)((unsigned<8>)((signed)Imm6))) +
                     ((unsigned)X[rs1][15: 8] * (signed)((unsigned<8>)((signed)Imm6))) +
                     ((unsigned)X[rs1][23:16] * (signed)((unsigned<8>)((signed)Imm6))) +
@@ -1322,7 +1322,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotsp.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((signed)(
-                    X[rd] + 
+                    X[rd] +
                     ((signed)X[rs1][15: 0] * (signed)X[rs2][15: 0]) +
                     ((signed)X[rs1][31:16] * (signed)X[rs2][31:16])));
             }
@@ -1332,7 +1332,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotsp.sc.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((signed)(
-                    X[rd] + 
+                    X[rd] +
                     ((signed)X[rs1][15: 0] * (signed)X[rs2][15:0]) +
                     ((signed)X[rs1][31:16] * (signed)X[rs2][15:0])));
             }
@@ -1342,7 +1342,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotsp.sci.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((signed)(
-                    X[rd] + 
+                    X[rd] +
                     ((signed)X[rs1][15: 0] * (signed)((unsigned<16>)((signed)Imm6))) +
                     ((signed)X[rs1][31:16] * (signed)((unsigned<16>)((signed)Imm6)))));
             }
@@ -1352,7 +1352,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotsp.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((signed)(
-                    X[rd] + 
+                    X[rd] +
                     ((signed)X[rs1][ 7: 0] * (signed)X[rs2][ 7: 0]) +
                     ((signed)X[rs1][15: 8] * (signed)X[rs2][15: 8]) +
                     ((signed)X[rs1][23:16] * (signed)X[rs2][23:16]) +
@@ -1364,7 +1364,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotsp.sc.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((signed)(
-                    X[rd] + 
+                    X[rd] +
                     ((signed)X[rs1][ 7: 0] * (signed)X[rs2][7:0]) +
                     ((signed)X[rs1][15: 8] * (signed)X[rs2][7:0]) +
                     ((signed)X[rs1][23:16] * (signed)X[rs2][7:0]) +
@@ -1376,7 +1376,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.sdotsp.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((signed)(
-                    X[rd] + 
+                    X[rd] +
                     ((signed)X[rs1][ 7: 0] * (signed)((unsigned<8>)((signed)Imm6))) +
                     ((signed)X[rs1][15: 8] * (signed)((unsigned<8>)((signed)Imm6))) +
                     ((signed)X[rs1][23:16] * (signed)((unsigned<8>)((signed)Imm6))) +
