@@ -17,7 +17,7 @@ InstructionSet XCoreVMac extends RV32I {
         }
         CV_MSU {
             encoding: 7'b1001001 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}";
+            assembly: {"cv.msu", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {
               // signed<65> result = (signed)X[rd] - (signed)X[rs1] * (signed)X[rs2] ;
               signed<64> result = (signed)X[rd] - (signed)X[rs1] * (signed)X[rs2] ;
