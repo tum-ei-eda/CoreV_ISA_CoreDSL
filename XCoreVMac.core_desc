@@ -62,7 +62,7 @@ InstructionSet XCoreVMac extends RV32I {
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
                 signed<31> product = (unsigned)X[rs1][15:0] * (unsigned)X[rs2][15:0];
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
+                unsigned<30> powerOf2 = (unsigned<32>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
                 unsigned<32> sum = product + powerOf2;
                 unsigned<32> rounded = sum >> Is3;
 
@@ -74,7 +74,7 @@ InstructionSet XCoreVMac extends RV32I {
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
                 signed<31> product = (unsigned)X[rs1][31:16] * (unsigned)X[rs2][31:16];
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
+                unsigned<30> powerOf2 = (unsigned<30>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
                 unsigned<32> sum = product + powerOf2;
                 unsigned<32> rounded = sum >> Is3;
 
@@ -86,7 +86,7 @@ InstructionSet XCoreVMac extends RV32I {
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
                 signed<31> product = (signed)X[rs1][15:0] * (signed)X[rs2][15:0];
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
+                unsigned<30> powerOf2 = (unsigned<30>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
                 signed<32> sum = product + powerOf2;
                 signed<32> rounded = sum >> Is3;
 
@@ -98,7 +98,7 @@ InstructionSet XCoreVMac extends RV32I {
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
                 signed<31> product = (signed)X[rs1][31:16] * (signed)X[rs2][31:16];
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
+                unsigned<30> powerOf2 = (unsigned<30>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
                 signed<32> sum = product + powerOf2;
                 signed<32> rounded = sum >> Is3;
 
@@ -143,7 +143,7 @@ InstructionSet XCoreVMac extends RV32I {
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
                 unsigned<30> product = (unsigned)(X[rs1][15:0]) * (unsigned)(X[rs2][15:0]);
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
+                unsigned<30> powerOf2 = (unsigned<30>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
                 unsigned<33> sum = product + (unsigned)X[rd] + powerOf2;
                 unsigned<33> rounded = sum >> Is3;
 
@@ -155,7 +155,7 @@ InstructionSet XCoreVMac extends RV32I {
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
                 unsigned<30> product = (unsigned)(X[rs1][31:16]) * (unsigned)(X[rs2][31:16]);
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
+                unsigned<30> powerOf2 = (unsigned<30>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
                 unsigned<33> sum = product + (unsigned)X[rd] + powerOf2;
                 unsigned<33> rounded = sum >> Is3;
 
@@ -167,7 +167,7 @@ InstructionSet XCoreVMac extends RV32I {
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
                 signed<31> product = (signed)X[rs1][15:0] * (signed)X[rs2][15:0];
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
+                unsigned<30> powerOf2 = (unsigned<30>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
                 signed<32> sum = product + (signed)X[rd] + powerOf2;
                 signed<32> rounded = sum >> Is3;
 
@@ -179,7 +179,7 @@ InstructionSet XCoreVMac extends RV32I {
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
                 signed<31> product = (signed)X[rs1][31:16] * (signed)X[rs2][31:16];
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
+                unsigned<30> powerOf2 = (unsigned<30>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
                 signed<32> sum = product + (signed)X[rd] + powerOf2;
                 signed<32> rounded = sum >> Is3;
 

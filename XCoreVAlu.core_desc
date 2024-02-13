@@ -110,8 +110,11 @@ InstructionSet XCoreVAlu extends RV32I {
             assembly: {"cv.clip", "{name(rd)}, {name(rs1)}, {Iuimm5}" };
             behavior: {
                 if (rd != 0) {
-                    signed<32> a = (Iuimm5) ? -(1 << (Iuimm5 - 1)) : -1;
-                    signed<32> b = (Iuimm5) ? ((1 << (Iuimm5 - 1)) - 1) : 0;
+                    // signed<32> a = (Iuimm5) ? -(1 << (Iuimm5 - 1)) : -1;
+                    // signed<32> b = (Iuimm5) ? ((1 << (Iuimm5 - 1)) - 1) : 0;
+                    // See coredsl2 typing rules!
+                    signed<32> a = (Iuimm5) ? -((unsigned<32>)1 << (Iuimm5 - 1)) : -1;
+                    signed<32> b = (Iuimm5) ? (((unsigned<32>)1 << (Iuimm5 - 1)) - 1) : 0;
                     if (X[rs1] <= a) X[rd] = a;
                     else if (X[rs1] >= b) X[rd] = b;
                     else X[rd] = X[rs1];
