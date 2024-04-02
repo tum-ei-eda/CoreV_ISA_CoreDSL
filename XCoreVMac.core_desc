@@ -45,7 +45,7 @@ InstructionSet XCoreVMac extends RV32I {
             encoding: 2'b01 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b100 :: rd[4:0] :: 7'b1011011;
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
-              if(rd != 0) X[rd] = (unsigned<32>)(((signed)X[rs1][31:16] * (signed)X[rs2][31:16]) >> Is3)[31:0]];
+              if(rd != 0) X[rd] = (unsigned<32>)(((signed)X[rs1][31:16] * (signed)X[rs2][31:16]) >> Is3)[31:0];
             }
         }
         CV_MULURN {
@@ -122,7 +122,7 @@ InstructionSet XCoreVMac extends RV32I {
             encoding: 2'b11 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
-              if(rd != 0) X[rd] = (unsigned<32>)((signed)X[rs1][31:16] * (signed)X[rs2][31:16] + (signed)X[rd]) >> Is3)[31:0];
+              if(rd != 0) X[rd] = (unsigned<32>)(((signed)X[rs1][31:16] * (signed)X[rs2][31:16] + (signed)X[rd]) >> Is3)[31:0];
             }
         }
         CV_MACURN {
