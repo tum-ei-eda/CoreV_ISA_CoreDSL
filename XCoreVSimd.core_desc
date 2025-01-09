@@ -999,7 +999,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.insert.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: read X[rd] first!
+                    X[rd] = X[rd];  // explicit copy to detect inout properly
                     X[rd][Imm6[0]*16 + 15 : Imm6[0]*16 ] = X[rs1][15: 0];
                 }
             }
@@ -1009,7 +1009,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.insert.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: read X[rd] first!
+                    X[rd] = X[rd];  // explicit copy to detect inout properly
                     X[rd][Imm6[1:0]*8 + 7 : Imm6[1:0]*8 ] = X[rs1][ 7: 0];
                 }
             }
@@ -1519,9 +1519,9 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.packhi.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: read X[rd] first?
                     X[rd][31:24] = X[rs1][ 7: 0];
                     X[rd][23:16] = X[rs2][ 7: 0];
+                    X[rd][15:0] = X[rd][15:0];  // explicit copy to detect inout properly
                 }
             }
         }
@@ -1530,7 +1530,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.packlo.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: read X[rd] first?
+                    X[rd][31:16] = X[rd][31:16];  // explicit copy to detect inout properly
                     X[rd][15: 8] = X[rs1][ 7: 0];
                     X[rd][ 7: 0] = X[rs2][ 7: 0];
                 }
@@ -2203,8 +2203,8 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.cplxmul.r", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: read X[rd] first!
                     X[rd][15: 0] = (((signed)X[rs1][15: 0] * (signed)X[rs2][15: 0] - (signed)X[rs1][31:16] * (signed)X[rs2][31:16]) >> 15)[15:0];
+                    X[rd][31:16] = X[rd][31:16];  // explicit copy to detect inout properly
                 }
             }
         }
@@ -2213,8 +2213,8 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.cplxmul.r.div2", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: read X[rd] first!
                     X[rd][15: 0] = (((signed)X[rs1][15: 0] * (signed)X[rs2][15: 0] - (signed)X[rs1][31:16] * (signed)X[rs2][31:16]) >> 16)[15:0];
+                    X[rd][31:16] = X[rd][31:16];  // explicit copy to detect inout properly
                 }
             }
         }
@@ -2223,8 +2223,8 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.cplxmul.r.div4", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: read X[rd] first!
                     X[rd][15: 0] = (((signed)X[rs1][15: 0] * (signed)X[rs2][15: 0] - (signed)X[rs1][31:16] * (signed)X[rs2][31:16]) >> 17)[15:0];
+                    X[rd][31:16] = X[rd][31:16];  // explicit copy to detect inout properly
                 }
             }
         }
@@ -2233,8 +2233,8 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.cplxmul.r.div8", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: read X[rd] first!
                     X[rd][15: 0] = (((signed)X[rs1][15: 0] * (signed)X[rs2][15: 0] - (signed)X[rs1][31:16] * (signed)X[rs2][31:16]) >> 18)[15:0];
+                    X[rd][31:16] = X[rd][31:16];  // explicit copy to detect inout properly
                 }
             }
         }
@@ -2243,7 +2243,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.cplxmul.i", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: read X[rd] first!
+                    X[rd][15:0] = X[rd][15:0];  // explicit copy to detect inout properly
                     X[rd][31:16] = (((signed)X[rs1][15: 0] * (signed)X[rs2][31:16] - (signed)X[rs1][31:16] * (signed)X[rs2][15: 0]) >> 15)[15:0];
                 }
             }
@@ -2253,7 +2253,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.cplxmul.i.div2", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: read X[rd] first!
+                    X[rd][15:0] = X[rd][15:0];  // explicit copy to detect inout properly
                     X[rd][31:16] = (((signed)X[rs1][15: 0] * (signed)X[rs2][31:16] - (signed)X[rs1][31:16] * (signed)X[rs2][15: 0]) >> 16)[15:0];
                 }
             }
@@ -2263,7 +2263,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.cplxmul.i.div4", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: read X[rd] first!
+                    X[rd][15:0] = X[rd][15:0];  // explicit copy to detect inout properly
                     X[rd][31:16] = (((signed)X[rs1][15: 0] * (signed)X[rs2][31:16] - (signed)X[rs1][31:16] * (signed)X[rs2][15: 0]) >> 17)[15:0];
                 }
             }
@@ -2273,7 +2273,7 @@ InstructionSet XCoreVSimd extends RV32I {
             assembly: {"cv.cplxmul.i.div8", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: read X[rd] first!
+                    X[rd][15:0] = X[rd][15:0];  // explicit copy to detect inout properly
                     X[rd][31:16] = (((signed)X[rs1][15: 0] * (signed)X[rs2][31:16] - (signed)X[rs1][31:16] * (signed)X[rs2][15: 0]) >> 18)[15:0];
                 }
             }
