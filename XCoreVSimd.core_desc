@@ -600,8 +600,8 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sra.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][15: 0] = (signed)X[rs1][15: 0] >> (X[rs2][15: 0]);
-                    X[rd][31:16] = (signed)X[rs1][31:16] >> (X[rs2][31:16]);
+                    X[rd][15: 0] = (unsigned<16>)((signed)X[rs1][15: 0] >> (X[rs2][15: 0]));
+                    X[rd][31:16] = (unsigned<16>)((signed)X[rs1][31:16] >> (X[rs2][31:16]));
                 }
             }
         }
@@ -610,8 +610,8 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sra.sc.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][15: 0] = (signed)X[rs1][15: 0] >> (X[rs2][15:0]);
-                    X[rd][31:16] = (signed)X[rs1][31:16] >> (X[rs2][15:0]);
+                    X[rd][15: 0] = (unsigned<16>)((signed)X[rs1][15: 0] >> (X[rs2][15:0]));
+                    X[rd][31:16] = (unsigned<16>)((signed)X[rs1][31:16] >> (X[rs2][15:0]));
                 }
             }
         }
@@ -620,8 +620,8 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sra.sci.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][15: 0] = (signed)X[rs1][15: 0] >> (((unsigned<16>)Imm6));
-                    X[rd][31:16] = (signed)X[rs1][31:16] >> (((unsigned<16>)Imm6));
+                    X[rd][15: 0] = (unsigned<16>)((signed)X[rs1][15: 0] >> (((unsigned<16>)Imm6)));
+                    X[rd][31:16] = (unsigned<16>)((signed)X[rs1][31:16] >> (((unsigned<16>)Imm6)));
                 }
             }
         }
@@ -630,10 +630,10 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sra.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][ 7: 0] = (signed)X[rs1][ 7: 0] >> (X[rs2][ 7: 0]);
-                    X[rd][15: 8] = (signed)X[rs1][15: 8] >> (X[rs2][15: 8]);
-                    X[rd][23:16] = (signed)X[rs1][23:16] >> (X[rs2][23:16]);
-                    X[rd][31:24] = (signed)X[rs1][31:24] >> (X[rs2][31:24]);
+                    X[rd][ 7: 0] = (unsigned<8>)((signed)X[rs1][ 7: 0] >> (X[rs2][ 7: 0]));
+                    X[rd][15: 8] = (unsigned<8>)((signed)X[rs1][15: 8] >> (X[rs2][15: 8]));
+                    X[rd][23:16] = (unsigned<8>)((signed)X[rs1][23:16] >> (X[rs2][23:16]));
+                    X[rd][31:24] = (unsigned<8>)((signed)X[rs1][31:24] >> (X[rs2][31:24]));
                 }
             }
         }
@@ -642,10 +642,10 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sra.sc.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][ 7: 0] = (signed)X[rs1][ 7: 0] >> (X[rs2][7:0]);
-                    X[rd][15: 8] = (signed)X[rs1][15: 8] >> (X[rs2][7:0]);
-                    X[rd][23:16] = (signed)X[rs1][23:16] >> (X[rs2][7:0]);
-                    X[rd][31:24] = (signed)X[rs1][31:24] >> (X[rs2][7:0]);
+                    X[rd][ 7: 0] = (unsigned<8>)((signed)X[rs1][ 7: 0] >> (X[rs2][7:0]));
+                    X[rd][15: 8] = (unsigned<8>)((signed)X[rs1][15: 8] >> (X[rs2][7:0]));
+                    X[rd][23:16] = (unsigned<8>)((signed)X[rs1][23:16] >> (X[rs2][7:0]));
+                    X[rd][31:24] = (unsigned<8>)((signed)X[rs1][31:24] >> (X[rs2][7:0]));
                 }
             }
         }
@@ -654,10 +654,10 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sra.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][ 7: 0] = (signed)X[rs1][ 7: 0] >> (((unsigned<8>)Imm6));
-                    X[rd][15: 8] = (signed)X[rs1][15: 8] >> (((unsigned<8>)Imm6));
-                    X[rd][23:16] = (signed)X[rs1][23:16] >> (((unsigned<8>)Imm6));
-                    X[rd][31:24] = (signed)X[rs1][31:24] >> (((unsigned<8>)Imm6));
+                    X[rd][ 7: 0] = (unsigned<8>)(signed)X[rs1][ 7: 0] >> (((unsigned<8>)Imm6));
+                    X[rd][15: 8] = (unsigned<8>)(signed)X[rs1][15: 8] >> (((unsigned<8>)Imm6));
+                    X[rd][23:16] = (unsigned<8>)(signed)X[rs1][23:16] >> (((unsigned<8>)Imm6));
+                    X[rd][31:24] = (unsigned<8>)(signed)X[rs1][31:24] >> (((unsigned<8>)Imm6));
                 }
             }
         }
@@ -930,8 +930,8 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.abs.h", "{name(rd)}, {name(rs1)}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][15: 0] = ((signed)X[rs1][15: 0] < 0) ? (-X[rs1][15: 0])[16-1:0] : X[rs1][15: 0];
-                    X[rd][31:16] = ((signed)X[rs1][31:16] < 0) ? (-X[rs1][31:16])[16-1:0] : X[rs1][31:16];
+                    X[rd][15: 0] = ((signed)X[rs1][15: 0] < 0) ? (unsigned<16>)(-X[rs1][15: 0]) : X[rs1][15: 0];
+                    X[rd][31:16] = ((signed)X[rs1][31:16] < 0) ? (unsigned<16>)(-X[rs1][31:16]) : X[rs1][31:16];
                 }
             }
         }
@@ -940,10 +940,10 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.abs.b", "{name(rd)}, {name(rs1)}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][ 7: 0] = ((signed)X[rs1][ 7: 0] < 0) ? (-X[rs1][ 7: 0])[8-1:0] : X[rs1][ 7: 0];
-                    X[rd][15: 8] = ((signed)X[rs1][15: 8] < 0) ? (-X[rs1][15: 8])[8-1:0] : X[rs1][15: 8];
-                    X[rd][23:16] = ((signed)X[rs1][23:16] < 0) ? (-X[rs1][23:16])[8-1:0] : X[rs1][23:16];
-                    X[rd][31:24] = ((signed)X[rs1][31:24] < 0) ? (-X[rs1][31:24])[8-1:0] : X[rs1][31:24];
+                    X[rd][ 7: 0] = ((signed)X[rs1][ 7: 0] < 0) ? (unsigned<8>)(-X[rs1][ 7: 0]) : X[rs1][ 7: 0];
+                    X[rd][15: 8] = ((signed)X[rs1][15: 8] < 0) ? (unsigned<8>)(-X[rs1][15: 8]) : X[rs1][15: 8];
+                    X[rd][23:16] = ((signed)X[rs1][23:16] < 0) ? (unsigned<8>)(-X[rs1][23:16]) : X[rs1][23:16];
+                    X[rd][31:24] = ((signed)X[rs1][31:24] < 0) ? (unsigned<8>)(-X[rs1][31:24]) : X[rs1][31:24];
                 }
             }
         }
@@ -952,7 +952,8 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.extract.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd] = (unsigned<32>)((signed)X[rs1][Imm6[0]*16 + 15 : Imm6[0]*16 ]);
+                    unsigned<8> lower = Imm6[0]*16;
+                    X[rd] = (unsigned<32>)((signed)X[rs1][lower+15 : lower ]);
                 }
             }
         }
@@ -961,7 +962,8 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.extract.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd] = (unsigned<32>)((signed)X[rs1][Imm6[1:0]*8 + 7 : Imm6[1:0]*8 ]);
+                    unsigned<8> lower = Imm6[1:0]*8;
+                    X[rd] = (unsigned<32>)((signed)X[rs1][lower+7 :lower ]);
                 }
             }
         }
@@ -970,7 +972,8 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.extractu.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd] = (unsigned<32>)(X[rs1][Imm6[0]*16 + 15 : Imm6[0]*16 ]);
+                    unsigned<8> lower = Imm6[0]*16;
+                    X[rd] = (unsigned<32>)(X[rs1][lower + 15 : lower ]);
                 }
             }
         }
@@ -979,7 +982,8 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.extractu.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd] = (unsigned<32>)(X[rs1][Imm6[1:0]*8 + 7 : Imm6[1:0]*8 ]);
+                    unsigned<8> lower = Imm6[1:0]*8;
+                    X[rd] = (unsigned<32>)(X[rs1][lower + 7 : lower ]);
                 }
             }
         }
@@ -988,7 +992,8 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.insert.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][Imm6[0]*16 + 15 : Imm6[0]*16 ] = X[rs1][15: 0];
+                    unsigned<8> lower = Imm6[0]*16;
+                    X[rd][lower + 15 : lower ] = X[rs1][15: 0];
                 }
             }
         }
@@ -997,7 +1002,8 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.insert.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][Imm6[1:0]*8 + 7 : Imm6[1:0]*8 ] = X[rs1][ 7: 0];
+                    unsigned<8> lower = Imm6[1:0]*8;
+                    X[rd][lower + 7 : lower ] = X[rs1][ 7: 0];
                 }
             }
         }
@@ -1384,8 +1390,10 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.shuffle.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][15: 0] = X[rs1][(X[rs2][15: 0][0]*16) + 15 : (X[rs2][15: 0][0]*16) ];
-                    X[rd][31:16] = X[rs1][(X[rs2][31:16][0]*16) + 15 : (X[rs2][31:16][0]*16) ];
+                    unsigned<16> lower = (X[rs2][15: 0][0]*16);
+                    unsigned<16> upper = (X[rs2][31:16][0]*16);
+                    X[rd][15: 0] = X[rs1][lower + 15 : lower ];
+                    X[rd][31:16] = X[rs1][upper + 15 : upper ];
                 }
             }
         }
@@ -1394,8 +1402,10 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.shuffle.sci.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][15: 0] = X[rs1][(Imm6[0]*16) + 15 : (Imm6[0]*16) ];
-                    X[rd][31:16] = X[rs1][(Imm6[1]*16) + 15 : (Imm6[1]*16) ];
+                    unsigned<8> lower = (Imm6[0]*16);
+                    unsigned<8> upper = (Imm6[1]*16);
+                    X[rd][15: 0] = X[rs1][lower + 15 : lower ];
+                    X[rd][31:16] = X[rs1][upper + 15 : upper ];
                 }
             }
         }
@@ -1404,10 +1414,14 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.shuffle.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][ 7: 0] = X[rs1][(X[rs2][ 7: 0][1:0]*8) + 7 : (X[rs2][ 7: 0][1:0]*8) ];
-                    X[rd][15: 8] = X[rs1][(X[rs2][15: 8][1:0]*8) + 7 : (X[rs2][15: 8][1:0]*8) ];
-                    X[rd][23:16] = X[rs1][(X[rs2][23:16][1:0]*8) + 7 : (X[rs2][23:16][1:0]*8) ];
-                    X[rd][31:24] = X[rs1][(X[rs2][31:24][1:0]*8) + 7 : (X[rs2][31:24][1:0]*8) ];
+                    unsigned<8> lowest = (X[rs2][ 7: 0][1:0]*8);
+                    unsigned<8> lower = (X[rs2][15: 8][1:0]*8);
+                    unsigned<8> upper = (X[rs2][23:16][1:0]*8);
+                    unsigned<8> highest = (X[rs2][31:24][1:0]*8);
+                    X[rd][ 7: 0] = X[rs1][lowest + 7 : lowest ];
+                    X[rd][15: 8] = X[rs1][lower + 7 : lower ];
+                    X[rd][23:16] = X[rs1][upper + 7 : upper ];
+                    X[rd][31:24] = X[rs1][highest + 7 : highest ];
                 }
             }
         }
@@ -1416,9 +1430,12 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.shuffleI0.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][ 7: 0] = X[rs1][Imm6[1:0]*8 + 7 : Imm6[1:0]*8 ];
-                    X[rd][15: 8] = X[rs1][Imm6[3:2]*8 + 7 : Imm6[3:2]*8 ];
-                    X[rd][23:16] = X[rs1][Imm6[5:4]*8 + 7 : Imm6[5:4]*8 ];
+                    unsigned<8> lowest = Imm6[1:0]*8;
+                    unsigned<8> middle = Imm6[3:2]*8;
+                    unsigned<8> upper = Imm6[5:4]*8;
+                    X[rd][ 7: 0] = X[rs1][lowest + 7 : lowest ];
+                    X[rd][15: 8] = X[rs1][middle + 7 : middle ];
+                    X[rd][23:16] = X[rs1][upper + 7 : upper ];
                     X[rd][31:24] = X[rs1][ 7: 0];
                 }
             }
@@ -1428,9 +1445,12 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.shuffleI1.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][ 7: 0] = X[rs1][Imm6[1:0]*8 + 7 : Imm6[1:0]*8 ];
-                    X[rd][15: 8] = X[rs1][Imm6[3:2]*8 + 7 : Imm6[3:2]*8 ];
-                    X[rd][23:16] = X[rs1][Imm6[5:4]*8 + 7 : Imm6[5:4]*8 ];
+                    unsigned<8> lowest = Imm6[1:0]*8;
+                    unsigned<8> middle = Imm6[3:2]*8;
+                    unsigned<8> upper = Imm6[5:4]*8;
+                    X[rd][ 7: 0] = X[rs1][lowest + 7 : lowest ];
+                    X[rd][15: 8] = X[rs1][middle + 7 : middle ];
+                    X[rd][23:16] = X[rs1][upper + 7 : upper ];
                     X[rd][31:24] = X[rs1][15: 8];
                 }
             }
@@ -1440,9 +1460,12 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.shuffleI2.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][ 7: 0] = X[rs1][Imm6[1:0]*8 + 7 : Imm6[1:0]*8 ];
-                    X[rd][15: 8] = X[rs1][Imm6[3:2]*8 + 7 : Imm6[3:2]*8 ];
-                    X[rd][23:16] = X[rs1][Imm6[5:4]*8 + 7 : Imm6[5:4]*8 ];
+                    unsigned<8> lowest = Imm6[1:0]*8;
+                    unsigned<8> middle = Imm6[3:2]*8;
+                    unsigned<8> upper = Imm6[5:4]*8;
+                    X[rd][ 7: 0] = X[rs1][lowest + 7 : lowest ];
+                    X[rd][15: 8] = X[rs1][middle + 7 : middle ];
+                    X[rd][23:16] = X[rs1][upper + 7 : upper ];
                     X[rd][31:24] = X[rs1][23:16];
                 }
             }
@@ -1452,9 +1475,12 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.shuffleI3.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][ 7: 0] = X[rs1][Imm6[1:0]*8 + 7 : Imm6[1:0]*8 ];
-                    X[rd][15: 8] = X[rs1][Imm6[3:2]*8 + 7 : Imm6[3:2]*8 ];
-                    X[rd][23:16] = X[rs1][Imm6[5:4]*8 + 7 : Imm6[5:4]*8 ];
+                    unsigned<8> lowest = Imm6[1:0]*8;
+                    unsigned<8> middle = Imm6[3:2]*8;
+                    unsigned<8> upper = Imm6[5:4]*8;
+                    X[rd][ 7: 0] = X[rs1][lowest + 7 : lowest ];
+                    X[rd][15: 8] = X[rs1][middle + 7 : middle ];
+                    X[rd][23:16] = X[rs1][upper + 7 : upper ];
                     X[rd][31:24] = X[rs1][31:24];
                 }
             }
@@ -1464,8 +1490,12 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.shuffle2.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][15: 0] = (X[rs2][15: 0][1] ? X[rs1] : X[rd])[(X[rs2][15: 0][0]*16) + 15 : (X[rs2][15: 0][0]*16) ];
-                    X[rd][31:16] = (X[rs2][31:16][1] ? X[rs1] : X[rd])[(X[rs2][31:16][0]*16) + 15 : (X[rs2][31:16][0]*16) ];
+                    unsigned<5> lower_selector = X[rs2][15: 0][1] ? rs1 : rd;
+                    unsigned<5> upper_selector = X[rs2][31:16][1] ? rs1 : rd;
+                    unsigned<8> lower = (X[rs2][15: 0][0]*16);
+                    unsigned<8> upper = (X[rs2][31:16][0]*16);
+                    X[rd][15: 0] = X[lower_selector][lower + 15 : lower ];
+                    X[rd][31:16] = X[upper_selector][upper + 15 : upper ];
                 }
             }
         }
@@ -1474,10 +1504,18 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.shuffle2.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][ 7: 0] = (X[rs2][ 7: 0][2] ? X[rs1] : X[rd])[(X[rs2][ 7: 0][1:0]*8) + 7 : (X[rs2][ 7: 0][1:0]*8) ];
-                    X[rd][15: 8] = (X[rs2][15: 8][2] ? X[rs1] : X[rd])[(X[rs2][15: 8][1:0]*8) + 7 : (X[rs2][15: 8][1:0]*8) ];
-                    X[rd][23:16] = (X[rs2][23:16][2] ? X[rs1] : X[rd])[(X[rs2][23:16][1:0]*8) + 7 : (X[rs2][23:16][1:0]*8) ];
-                    X[rd][31:24] = (X[rs2][31:24][2] ? X[rs1] : X[rd])[(X[rs2][31:24][1:0]*8) + 7 : (X[rs2][31:24][1:0]*8) ];
+                    unsigned<5> lowest_selector = X[rs2][ 7: 0][2] ? rs1 : rd;
+                    unsigned<5> lower_selector = X[rs2][15: 8][2] ? rs1 : rd;
+                    unsigned<5> upper_selector = X[rs2][23:16][2] ? rs1 : rd;
+                    unsigned<5> highest_selector = X[rs2][31:24][2] ? rs1 : rd;
+                    unsigned<8> lowest = (X[rs2][ 7: 0][1:0]*8);
+                    unsigned<8> lower = (X[rs2][15: 8][1:0]*8);
+                    unsigned<8> upper = (X[rs2][23:16][1:0]*8);
+                    unsigned<8> highest = (X[rs2][31:24][1:0]*8);
+                    X[rd][ 7: 0] = X[lowest_selector][lowest + 7 : lowest ];
+                    X[rd][15: 8] = X[lower_selector][lower + 7 : lower ];
+                    X[rd][23:16] = X[upper_selector][upper + 7 : upper ];
+                    X[rd][31:24] = X[highest_selector][highest + 7 : highest ];
                 }
             }
         }
@@ -2261,7 +2299,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             behavior: {
                 if (rd != 0) {
                     X[rd][15: 0] = X[rs1][15: 0];
-                    X[rd][31:16] = (-X[rs1][31:16])[15:0];
+                    X[rd][31:16] = (unsigned<16>)(-X[rs1][31:16]);
                 }
             }
         }
