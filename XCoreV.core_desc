@@ -7,5 +7,4 @@ import "XCoreVSimd.core_desc"
 // import "XCoreVHwlp.core_desc"
 
 // InstructionSet XCoreV extends XCoreVMac, XCoreVMem, XCoreVBranchImmediate, XCoreVAlu, XCoreVBitmanip, XCoreVSimd, XCoreVHwlp {
-InstructionSet XCoreV extends XCoreVMac, XCoreVMem, XCoreVBranchImmediate, XCoreVAlu, XCoreVBitmanip, XCoreVSimd {
-}
+InstructionSet XCoreV combines XCoreVMac, XCoreVMem, XCoreVBranchImmediate, XCoreVAlu, XCoreVBitmanip, XCoreVSimd;
