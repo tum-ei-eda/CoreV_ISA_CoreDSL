@@ -1,0 +1,36 @@
+import "XCoreVMac.core_desc"
+
+InstructionSet tum_xcorevmac extends XCoreVMac {
+    functions {
+        signed<32> cv_mac(signed<32> x, signed<32> y, signed<32> acc) {
+            signed<65> result = acc + (x * y);
+            return (signed<32>)result;
+        }
+
+        signed<32> cv_msu(signed<32> x, signed<32> y, signed<32> acc) {
+            signed<65> result = acc - (x * y);
+            return (signed<32>)result;
+        }
+    }
+
+    instructions {
+        CV_MAC {
+            encoding: 7'b1001000 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+            assembly: {"cv.mac", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {
+                if ((rd % RFS) != 0) {
+                    X[rd % RFS] = cv_mac((signed)X[rs1 % RFS], (signed)X[rs2 % RFS], (signed)X[rd % RFS]);
+                }
+            }
+        }
+        CV_MSU {
+            encoding: 7'b1001001 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                if ((rd % RFS) != 0) {
+                    X[rd % RFS] = cv_msu((signed)X[rs1 % RFS], (signed)X[rs2 % RFS], (signed)X[rd % RFS]);
+                }
+            }
+        }
+    }
+}
