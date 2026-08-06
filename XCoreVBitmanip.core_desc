@@ -47,6 +47,128 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
         //         // TODO
         //     }
         // }
+        CV_INSERT {
+            encoding: 2'b10 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
+            assembly: {"cv.insert", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
+            behavior: {
+                // Warning: UNTESTED
+                if (rd != 0) {
+                    unsigned<32> mask = 0;
+                    unsigned<6> i = 0;
+                    unsigned<6> width = Luimm5 + 1;
+
+                    if (width > (32 - Iuimm5)) {
+                        width = 32 - Iuimm5;
+                    }
+
+                    while (i < width) {
+                        mask = mask | (1 << (Iuimm5 + i));
+                        i = i + 1;
+                    }
+
+                    X[rd] = (X[rd] & ~mask) |
+                            ((X[rs1] << Iuimm5) & mask);
+                }
+            }
+        }
+        CV_BCLR {
+            encoding: 2'b00 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
+            assembly: {"cv.bclr", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
+            behavior: {
+                // Warning: UNTESTED
+                if (rd != 0) {
+                    unsigned<32> mask = 0;
+                    unsigned<6> i = 0;
+                    unsigned<6> width = Luimm5 + 1;
+
+                    if (width > (32 - Iuimm5)) {
+                        width = 32 - Iuimm5;
+                    }
+
+                    while (i < width) {
+                        mask = mask | (1 << (Iuimm5 + i));
+                        i = i + 1;
+                    }
+
+                    X[rd] = X[rs1] & ~mask;
+                }
+            }
+        }
+        CV_BSET {
+            encoding: 2'b01 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
+            assembly: {"cv.bset", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
+            behavior: {
+                // Warning: UNTESTED
+                if (rd != 0) {
+                    unsigned<32> mask = 0;
+                    unsigned<6> i = 0;
+                    unsigned<6> width = Luimm5 + 1;
+
+                    if (width > (32 - Iuimm5)) {
+                        width = 32 - Iuimm5;
+                    }
+
+                    while (i < width) {
+                        mask = mask | (1 << (Iuimm5 + i));
+                        i = i + 1;
+                    }
+
+                    X[rd] = X[rs1] | mask;
+                }
+            }
+        }
+        CV_BITREV {
+            // Bits 29:27 must be zero; only bits 26:25 encode Is3.
+            encoding: 2'b11 :: 3'b000 :: Luimm2[1:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
+            assembly: {"cv.bitrev", "{name(rd)}, {name(rs1)}, {Luimm2}, {Iuimm5}" };
+            behavior: {
+                // Warning: UNTESTED
+                if (rd != 0) {
+                    unsigned<32> source = X[rs1] << Iuimm5;
+                    unsigned<32> result = 0;
+
+                    unsigned<3> groupWidth = 1;
+                    unsigned<3> firstWidth = 1;
+                    unsigned<6> sourceBase = 0;
+                    unsigned<6> destinationBase = 0;
+                    unsigned<6> chunkWidth = 0;
+                    unsigned<6> i = 0;
+
+                    // Is3 == 3 behaves like Is3 == 0.
+                    if (Luimm2 == 1) {
+                        groupWidth = 2;
+                    } else if (Luimm2 == 2) {
+                        groupWidth = 3;
+                    }
+
+                    firstWidth = 32 % groupWidth;
+                    if (firstWidth == 0) {
+                        firstWidth = groupWidth;
+                    }
+
+                    chunkWidth = firstWidth;
+
+                    while (sourceBase < 32) {
+                        destinationBase = 32 - sourceBase - chunkWidth;
+                        i = 0;
+
+                        // Preserve the bit order within each group.
+                        while (i < chunkWidth) {
+                            if (((source >> (sourceBase + i)) & 1) != 0) {
+                                result = result |
+                                         (1 << (destinationBase + i));
+                            }
+                            i = i + 1;
+                        }
+
+                        sourceBase = sourceBase + chunkWidth;
+                        chunkWidth = groupWidth;
+                    }
+
+                    X[rd] = result;
+                }
+            }
+        }
         // SOURCE FILE: instr_srcs/XCoreVALU_BitmanipR.txt
         CV_EXTRACTR {
             encoding: 7'b0011000 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
@@ -66,66 +188,201 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                 }
             }
         }
-        // CV_INSERTR {
-        //     encoding: 7'b0011010 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
-        //     assembly: {"cv.insertr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
+        // TODO: switch impl?
+        // CV_EXTRACTUR {
+        //     encoding: 7'b0011001 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+        //     assembly: {"cv.extractur", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
         //     behavior: {
-        //         // TODO
+        //         if (rd != 0) {
+        //             unsigned<5> offset = X[rs2][4:0];
+        //             unsigned<6> width = X[rs2][9:5] + 1;
+        //             unsigned<32> mask = 0;
+        //             unsigned<6> i = 0;
+        //             if (width > (32 - offset)) {
+        //                 width = 32 - offset;
+        //             }
+        //             while (i < width) {
+        //                 mask = mask | (1 << i);
+        //                 i = i + 1;
+        //             }
+        //             X[rd] = (X[rs1] >> offset) & mask;
+        //         }
         //     }
         // }
-        // CV_BCLRR {
-        //     encoding: 7'b0011100 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
-        //     assembly: {"cv.bclrr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
-        //     behavior: {
-        //         // TODO
-        //     }
-        // }
-        // CV_BSETR {
-        //     encoding: 7'b0011101 :: rs2[4:0] :: scr1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
-        //     assembly: {"cv.bsetr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
-        //     behavior: {
-        //         // TODO
-        //     }
-        // }
-        // CV_ROR {
-        //     encoding: 7'b0100000 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
-        //     assembly: {"cv.ror", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
-        //     behavior: {
-        //         // TODO
-        //     }
-        // }
-        // CV_FF1 {
-        //     encoding: 7'b0100001 :: 5'b00000 :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
-        //     assembly: {"cv.ff1", "{name(rd)}, {name(rs1)}" };
-        //     behavior: {
-        //         // TODO
-        //     }
-        // }
-        // CV_FL1 {
-        //     encoding: 7'b0100010 :: 5'b00000 :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
-        //     assembly: {"cv.fl1", "{name(rd)}, {name(rs1)}" };
-        //     behavior: {
-        //         // TODO
-        //     }
-        // }
+        CV_INSERTR {
+            encoding: 7'b0011010 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+            assembly: {"cv.insertr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
+            behavior: {
+                // Warning: UNTESTED
+                if (rd != 0) {
+                    unsigned<5> offset = X[rs2][4:0];
+                    unsigned<6> width = X[rs2][9:5] + 1;
+                    unsigned<32> mask = 0;
+                    unsigned<6> i = 0;
+
+                    if (width > (32 - offset)) {
+                        width = 32 - offset;
+                    }
+
+                    while (i < width) {
+                        mask = mask | (1 << (offset + i));
+                        i = i + 1;
+                    }
+
+                    X[rd] = (X[rd] & ~mask) |
+                            ((X[rs1] << offset) & mask);
+                }
+            }
+        }
+        CV_BCLRR {
+            encoding: 7'b0011100 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+            assembly: {"cv.bclrr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
+            behavior: {
+                // Warning: UNTESTED
+                if (rd != 0) {
+                    unsigned<5> offset = X[rs2][4:0];
+                    unsigned<6> width = X[rs2][9:5] + 1;
+                    unsigned<32> mask = 0;
+                    unsigned<6> i = 0;
+
+                    if (width > (32 - offset)) {
+                        width = 32 - offset;
+                    }
+
+                    while (i < width) {
+                        mask = mask | (1 << (offset + i));
+                        i = i + 1;
+                    }
+
+                    X[rd] = X[rs1] & ~mask;
+                }
+            }
+        }
+        CV_BSETR {
+            encoding: 7'b0011101 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+            assembly: {"cv.bsetr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
+            behavior: {
+                // Warning: UNTESTED
+                if (rd != 0) {
+                    unsigned<5> offset = X[rs2][4:0];
+                    unsigned<6> width = X[rs2][9:5] + 1;
+                    unsigned<32> mask = 0;
+                    unsigned<6> i = 0;
+
+                    if (width > (32 - offset)) {
+                        width = 32 - offset;
+                    }
+
+                    while (i < width) {
+                        mask = mask | (1 << (offset + i));
+                        i = i + 1;
+                    }
+
+                    X[rd] = X[rs1] | mask;
+                }
+            }
+        }
+        CV_ROR {
+            encoding: 7'b0100000 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+            assembly: {"cv.ror", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
+            behavior: {
+                if (rd != 0) {
+                    unsigned<5> shift = X[rs2][4:0];
+
+                    if (shift == 0) {
+                        X[rd] = X[rs1];
+                    } else {
+                        X[rd] = (X[rs1] >> shift) |
+                                (X[rs1] << (32 - shift));
+                    }
+                }
+            }
+        }
+        CV_FF1 {
+            encoding: 7'b0100001 :: 5'b00000 :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+            assembly: {"cv.ff1", "{name(rd)}, {name(rs1)}" };
+            behavior: {
+                // Warning: UNTESTED
+                if (rd != 0) {
+                    unsigned<6> result = 32;
+                    unsigned<6> i = 0;
+
+                    while (i < 32) {
+                        if ((result == 32) &&
+                            (((X[rs1] >> i) & 1) != 0)) {
+                            result = i;
+                        }
+                        i = i + 1;
+                    }
+
+                    X[rd] = result;
+                }
+            }
+        }
+        CV_FL1 {
+            encoding: 7'b0100010 :: 5'b00000 :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+            assembly: {"cv.fl1", "{name(rd)}, {name(rs1)}" };
+            behavior: {
+                // Warning: UNTESTED
+                if (rd != 0) {
+                    unsigned<6> result = 32;
+                    unsigned<6> i = 0;
+
+                    while (i < 32) {
+                        if (((X[rs1] >> i) & 1) != 0) {
+                            result = i;
+                        }
+                        i = i + 1;
+                    }
+
+                    X[rd] = result;
+                }
+            }
+        }
         // CV_CLB {
         //     encoding: 7'b0100011 :: 5'b00000 :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
         //     assembly: {"cv.clb", "{name(rd)}, {name(rs1)}" };
         //     behavior: {
+        //         // Warning: UNTESTED
         //         if (rd != 0) {
-        //             if (X[rs1] == 0) return 0;
-        //             unsigned<5> i = 0;
-        //             while (X[rs1][31 - i] == X[rs1][31]) i = i + 1;
-        //             return i - 1;
+        //             unsigned<6> result = 0;
+        //             unsigned<6> i = 1;
+        //             unsigned<1> leadingBit = X[rs1][31];
+        //             unsigned<1> scanning = 1;
+        //             if (X[rs1] != 0) {
+        //                 while (i < 32) {
+        //                     // Warning: Broken M2-ISA-R type inference?
+        //                     if (scanning &&
+        //                         (X[rs1][31 - i] == leadingBit)) {
+        //                         result = result + 1;
+        //                     } else {
+        //                         scanning = 0;
+        //                     }
+        //                     i = i + 1;
+        //                 }
+        //             }
+        //             X[rd] = result;
         //         }
         //     }
         // }
-        // CV_CNT {
-        //     encoding: 7'b0100100 :: 5'b00000 :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
-        //     assembly: {"cv.cnt", "{name(rd)}, {name(rs1)}" };
-        //     behavior: {
-        //         // TODO
-        //     }
-        // }
+        CV_CNT {
+            encoding: 7'b0100100 :: 5'b00000 :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+            assembly: {"cv.cnt", "{name(rd)}, {name(rs1)}" };
+            behavior: {
+                // Warning: UNTESTED
+                if (rd != 0) {
+                    unsigned<6> result = 0;
+                    unsigned<6> i = 0;
+
+                    while (i < 32) {
+                        result = result +
+                                 ((X[rs1] >> i) & 1);
+                        i = i + 1;
+                    }
+
+                    X[rd] = result;
+                }
+            }
+        }
     }
 }
