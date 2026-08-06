@@ -10,6 +10,31 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                 }
             }
         }
+        // TODO: switch impl?
+        // CV_EXTRACT {
+        //     encoding: 2'b00 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
+        //     assembly: {"cv.extract", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
+        //     behavior: {
+        //         if (rd != 0) {
+        //             unsigned<6> width = Luimm5 + 1;
+        //             unsigned<32> value = X[rs1] >> Iuimm5;
+        //             unsigned<32> mask = 0;
+        //             unsigned<6> i = 0;
+        //             if (width > (32 - Iuimm5)) {
+        //                 width = 32 - Iuimm5;
+        //             }
+        //             while (i < width) {
+        //                 mask = mask | (1 << i);
+        //                 i = i + 1;
+        //             }
+        //             value = value & mask;
+        //             if (((value >> (width - 1)) & 1) != 0) {
+        //                 value = value | ~mask;
+        //             }
+        //             X[rd] = value;
+        //         }
+        //     }
+        // }
         CV_EXTRACTU {
             encoding: 2'b01 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.extractu", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
@@ -19,32 +44,24 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                 }
             }
         }
-        // CV_INSERT {
-        //     encoding: 2'b10 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
-        //     assembly: {"cv.insert", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
+        // TODO: switch impl?
+        // CV_EXTRACTU {
+        //     encoding: 2'b01 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
+        //     assembly: {"cv.extractu", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
         //     behavior: {
-        //         // TODO
-        //     }
-        // }
-        // CV_BCLR {
-        //     encoding: 2'b00 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
-        //     assembly: {"cv.bclr", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
-        //     behavior: {
-        //         // TODO
-        //     }
-        // }
-        // CV_BSET {
-        //     encoding: 2'b01 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
-        //     assembly: {"cv.bset", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
-        //     behavior: {
-        //         // TODO
-        //     }
-        // }
-        // CV_BITREV {
-        //     encoding: 2'b11 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
-        //     assembly: {"cv.bitrev", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
-        //     behavior: {
-        //         // TODO
+        //         if (rd != 0) {
+        //             unsigned<6> width = Luimm5 + 1;
+        //             unsigned<32> mask = 0;
+        //             unsigned<6> i = 0;
+        //             if (width > (32 - Iuimm5)) {
+        //                 width = 32 - Iuimm5;
+        //             }
+        //             while (i < width) {
+        //                 mask = mask | (1 << i);
+        //                 i = i + 1;
+        //             }
+        //             X[rd] = (X[rs1] >> Iuimm5) & mask;
+        //         }
         //     }
         // }
         CV_INSERT {
@@ -179,6 +196,32 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                 }
             }
         }
+        // TODO: switch impl?
+        // CV_EXTRACTR {
+        //     encoding: 7'b0011000 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+        //     assembly: {"cv.extractr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
+        //     behavior: {
+        //         if (rd != 0) {
+        //             unsigned<5> offset = X[rs2][4:0];
+        //             unsigned<6> width = X[rs2][9:5] + 1;
+        //             unsigned<32> value = X[rs1] >> offset;
+        //             unsigned<32> mask = 0;
+        //             unsigned<6> i = 0;
+        //             if (width > (32 - offset)) {
+        //                 width = 32 - offset;
+        //             }
+        //             while (i < width) {
+        //                 mask = mask | (1 << i);
+        //                 i = i + 1;
+        //             }
+        //             value = value & mask;
+        //             if (((value >> (width - 1)) & 1) != 0) {
+        //                 value = value | ~mask;
+        //             }
+        //             X[rd] = value;
+        //         }
+        //     }
+        // }
         CV_EXTRACTUR {
             encoding: 7'b0011001 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
             assembly: {"cv.extractur", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
