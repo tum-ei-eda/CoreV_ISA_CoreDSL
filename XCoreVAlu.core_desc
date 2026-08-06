@@ -108,8 +108,8 @@ InstructionSet XCoreVAlu extends RISCVBase {
                 if (rd != 0) {
                     signed<32> a = (Iuimm5) ? -(1 << (Iuimm5 - 1)) : -1;
                     signed<32> b = (Iuimm5) ? ((1 << (Iuimm5 - 1)) - 1) : 0;
-                    if (X[rs1] <= a) X[rd] = a;
-                    else if (X[rs1] >= b) X[rd] = b;
+                    if ((signed)X[rs1] <= a) X[rd] = a;
+                    else if ((signed)X[rs1] >= b) X[rd] = b;
                     else X[rd] = X[rs1];
                 }
             }
