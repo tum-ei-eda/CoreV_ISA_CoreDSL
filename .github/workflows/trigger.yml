@@ -1,0 +1,23 @@
+name: Trigger Core-V ETISS Test Flow
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  trigger_repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Core-V ETISS Test Flow
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.SEAL5_ACCESS_TOKEN }}
+          repository: tum-ei-eda/seal5_etiss_test_env
+          event-type: xcorev-cdsl-event
+          client-payload: >-
+            {"triggered_run_id": "${{ github.run_id }}", "ref": "${{ github.event.pull_request.head.sha || github.sha }}", "from": "xcorev-cdsl", "is_pr": "${{ github.event_name == 'pull_request' }}"}
