@@ -1,7 +1,7 @@
 import "RISCVBase.core_desc"
 import "RVI.core_desc"
 
-InstructionSet tum_ret extends RISCVBase {
+InstructionSet tum_ret extends tum_csr {
     architectural_state {
         signed<32> ETISS_RETURNCODE_NOERROR = 0;
         signed<32> ETISS_RETURNCODE_GENERALERROR = -1;
@@ -22,8 +22,8 @@ InstructionSet tum_ret extends RISCVBase {
         signed<32> ETISS_RETURNCODE_SYSCALL = -17;
         signed<32> ETISS_RETURNCODE_PAGEFAULT = -18;
         signed<32> ETISS_RETURNCODE_BREAKPOINT = -19;
-        signed<32> ETISS_RETURNCODE_CPUFINISHED = 1 << 31;
-        signed<32> ETISS_RETURNCODE_CPUTERMINATED = 0x80000001;
+        signed<32> ETISS_RETURNCODE_CPUFINISHED = -2147483648;
+        signed<32> ETISS_RETURNCODE_CPUTERMINATED = -2147483647;
         signed<32> ETISS_RETURNCODE_JITERROR = -32;
         signed<32> ETISS_RETURNCODE_JITCOMPILATIONERROR = -33;
         signed<32> ETISS_RETURNCODE_ARCHERROR = -34;
@@ -40,15 +40,6 @@ InstructionSet tum_ret extends RISCVBase {
     }
 
     functions {
-        unsigned<64> get_field(unsigned<64> reg, unsigned<64> mask) {
-            if (!mask) return 0;
-            return (reg & mask) / (mask & ~(mask << 1));
-        }
-
-        unsigned<64> set_field(unsigned<64> reg, unsigned<64> mask, unsigned<64> val) {
-            return ((reg & ~mask) | ((val * (mask & ~(mask << 1))) & mask));
-        }
-
         unsigned<8> ctz(unsigned<64> val) {
             if (!val)
                 return 0;
@@ -95,15 +86,15 @@ InstructionSet tum_ret extends RISCVBase {
             int irq2 = (mcause & ((unsigned<XLEN>)1 << (XLEN - 1))) != 0;
 
             if (irq2) {
-                deleg = (PRIV <= RV_PRV_S) ? CSR[RV_CSR_MIDELEG] : 0;
-                bit &= ((unsigned<XLEN>)1 << (XLEN - 1)) - 1;
+                deleg = (unsigned<XLEN>)((PRIV <= RV_PRV_S) ? CSR[RV_CSR_MIDELEG] : 0);
+                bit &= (unsigned<32>)(((unsigned<XLEN>)1 << (XLEN - 1)) - 1);
             } else {
-                deleg = (PRIV <= RV_PRV_S) ? CSR[RV_CSR_MEDELEG] : 0;
+                deleg = (unsigned<XLEN>)((PRIV <= RV_PRV_S) ? CSR[RV_CSR_MEDELEG] : 0);
             }
 
             if (PRIV <= RV_PRV_S && (deleg >> bit) & 1) { // handle in S-MODE
-                vector = (CSR[RV_CSR_STVEC] & 1) && irq2 ? bit * 4 : 0;
-                PC = (CSR[RV_CSR_STVEC] & ~(unsigned<XLEN>)1) + vector;
+                vector = (unsigned<32>)((CSR[RV_CSR_STVEC] & 1) && irq2 ? bit * 4 : 0);
+                PC = (unsigned<XLEN>)((CSR[RV_CSR_STVEC] & ~(unsigned<XLEN>)1) + vector);
                 CSR[RV_CSR_SEPC] = epc;
                 CSR[RV_CSR_SCAUSE] = mcause;
 
@@ -115,8 +106,8 @@ InstructionSet tum_ret extends RISCVBase {
                 PRIV = (unsigned<3>)RV_PRV_S;
 
             } else {    // handle in M-MODE
-                vector = (CSR[RV_CSR_MTVEC] & 1) && irq2 ? bit * 4 : 0;
-                PC = (CSR[RV_CSR_MTVEC] & ~(unsigned<XLEN>)1) + vector;
+                vector = (unsigned<32>)((CSR[RV_CSR_MTVEC] & 1) && irq2 ? bit * 4 : 0);
+                PC = (unsigned<XLEN>)((CSR[RV_CSR_MTVEC] & ~(unsigned<XLEN>)1) + vector);
                 CSR[RV_CSR_MEPC] = epc;
                 CSR[RV_CSR_MCAUSE] = mcause;
 
@@ -154,13 +145,13 @@ InstructionSet tum_ret extends RISCVBase {
 
             unsigned<XLEN> mie = (unsigned<XLEN>)get_field(CSR[RV_CSR_MSTATUS], RV_MSTATUS_MIE);
             unsigned<XLEN> m_enabled = PRIV < RV_PRV_M || (PRIV == RV_PRV_M && mie);
-            unsigned<XLEN> enabled_interrupts = pending_interrupts & ~CSR[RV_CSR_MIDELEG] & -m_enabled;
+            unsigned<XLEN> enabled_interrupts = (unsigned<XLEN>)(pending_interrupts & ~CSR[RV_CSR_MIDELEG] & -m_enabled);
 
             if (enabled_interrupts == 0) {
                 unsigned<XLEN> deleg = CSR[RV_CSR_MIDELEG];
                 unsigned<XLEN> sie = (unsigned<XLEN>)get_field(csr_read(RV_CSR_SSTATUS), RV_MSTATUS_SIE);
                 unsigned<XLEN> s_enabled = PRIV < RV_PRV_S || (PRIV == RV_PRV_S && sie);
-                enabled_interrupts = pending_interrupts & deleg & -s_enabled;
+                enabled_interrupts = (unsigned<32>)(pending_interrupts & deleg & -s_enabled);
             }
 
             if (enabled_interrupts) {
@@ -223,7 +214,7 @@ InstructionSet tum_ret extends RISCVBase {
 
                 s = (unsigned<XLEN>)set_field(s, RV_MSTATUS_MIE, get_field(s, RV_MSTATUS_MPIE));
                 s = (unsigned<XLEN>)set_field(s, RV_MSTATUS_MPIE, 1);
-                s = (unsigned<XLEN>)set_field(s, RV_MSTATUS_MPP, extension_enabled('U') ? RV_PRV_U : RV_PRV_M);
+                s = (unsigned<XLEN>)set_field(s, RV_MSTATUS_MPP, (unsigned<64>)(extension_enabled('U') ? RV_PRV_U : RV_PRV_M));
 
                 csr_write(RV_CSR_MSTATUS, s);
                 PRIV = (unsigned<3>)prev_prv;
@@ -254,7 +245,7 @@ InstructionSet tum_ret extends RISCVBase {
         ECALL [[no_cont]] {
             encoding: 12'b000000000000 :: 5'b00000 :: 3'b000 :: 5'b00000 :: 7'b1110011;
             behavior: {
-                raise(0, RV_CAUSE_USER_ECALL + PRIV);
+                raise(0, (unsigned<32>)(RV_CAUSE_USER_ECALL + PRIV));
             }
         }
 
@@ -313,6 +304,15 @@ InstructionSet tum_csr extends Zicsr {
     }
 
     functions {
+        unsigned<64> get_field(unsigned<64> reg, unsigned<64> mask) {
+            if (!mask) return 0;
+            return (reg & mask) / (mask & ~(mask << 1));
+        }
+
+        unsigned<64> set_field(unsigned<64> reg, unsigned<64> mask, unsigned<64> val) {
+            return (unsigned<64>)(((reg & ~mask) | ((val * (mask & ~(mask << 1))) & mask)));
+        }
+
         extern unsigned<64> etiss_get_cycles() [[ etiss_needs_arch ]];
         extern unsigned<64> etiss_get_time();
         extern unsigned<64> etiss_get_instret() [[ etiss_needs_arch ]];
@@ -332,7 +332,7 @@ InstructionSet tum_csr extends Zicsr {
                 if (extension_enabled('X'))
                     mask |= RV_MSTATUS_XS;
 
-                if ((XLEN == 32 && get_field(CSR[RV_CSR_SATP], 1 << 31)) || (XLEN == 64 && get_field(CSR[RV_CSR_SATP], 15 << 60)))
+                if ((XLEN == 32 && get_field(CSR[RV_CSR_SATP], 32'h1 << 31)) || (XLEN == 64 && get_field(CSR[RV_CSR_SATP], 64'hf << 60)))
                     mask |= RV_MSTATUS_SUM;
             }
 
@@ -348,20 +348,20 @@ InstructionSet tum_csr extends Zicsr {
         unsigned<XLEN> csr_read(unsigned int csr) {
             if (csr == RV_CSR_FFLAGS) return CSR[RV_CSR_FCSR] & 0x1F;
             if (csr == RV_CSR_FRM) return (CSR[RV_CSR_FCSR] >> 5) & 0x07;
-            if (csr == RV_CSR_CYCLE) return etiss_get_cycles();
-            if (csr == RV_CSR_CYCLEH) return etiss_get_cycles() >> 32;
-            if (csr == RV_CSR_TIME) return etiss_get_time();
-            if (csr == RV_CSR_TIMEH) return etiss_get_time() >> 32;
-            if (csr == RV_CSR_INSTRET) return etiss_get_instret();
-            if (csr == RV_CSR_INSTRETH) return etiss_get_instret() >> 32;
-            if (csr == RV_CSR_MSTATUS || csr == RV_CSR_SSTATUS) return CSR[RV_CSR_MSTATUS] | (RV_MSTATUS_UXL & (RV_MSTATUS_UXL << 1)) | (RV_MSTATUS_SXL & (RV_MSTATUS_SXL << 1));
+            if (csr == RV_CSR_CYCLE) return (unsigned<XLEN>)(etiss_get_cycles());
+            if (csr == RV_CSR_CYCLEH) return (unsigned<XLEN>)(etiss_get_cycles() >> 32);
+            if (csr == RV_CSR_TIME) return (unsigned<XLEN>)(etiss_get_time());
+            if (csr == RV_CSR_TIMEH) return (unsigned<XLEN>)(etiss_get_time() >> 32);
+            if (csr == RV_CSR_INSTRET) return (unsigned<XLEN>)(etiss_get_instret());
+            if (csr == RV_CSR_INSTRETH) return (unsigned<XLEN>)(etiss_get_instret() >> 32);
+            if (csr == RV_CSR_MSTATUS || csr == RV_CSR_SSTATUS) return (unsigned<XLEN>)(CSR[RV_CSR_MSTATUS] | (RV_MSTATUS_UXL & (RV_MSTATUS_UXL << 1)) | (RV_MSTATUS_SXL & (RV_MSTATUS_SXL << 1)));
             if (csr == RV_CSR_MISA) return (unsigned<2>)(XLEN / 32) :: CSR[RV_CSR_MISA][XLEN - 3:0];
 
             return CSR[csr];
         }
 
         void csr_write(unsigned int csr, unsigned<XLEN> val) {
-            if (csr == RV_CSR_FFLAGS) CSR[RV_CSR_FCSR] = (CSR[RV_CSR_FCSR] & (0x07 << 5)) | (val & 0x1F);
+            if (csr == RV_CSR_FFLAGS) CSR[RV_CSR_FCSR] = (CSR[RV_CSR_FCSR] & (32'h07 << 5)) | (val & 0x1F);
             else if (csr == RV_CSR_FRM) CSR[RV_CSR_FCSR] = ((val & 0x07) << 5) | (CSR[RV_CSR_FCSR] & 0x1F);
             else if (csr == RV_CSR_FCSR) CSR[RV_CSR_FCSR] = val & 0xFF;
             else if (csr == RV_CSR_MSTATUS) CSR[RV_CSR_MSTATUS] = val & mstatus_mask();
@@ -459,7 +459,7 @@ InstructionSet tum_semihosting extends RV32I {
                     ) {
                     unsigned<XLEN> operation = X[10];
                     unsigned<XLEN> parameter = X[11];
-                    X[10] = (signed<XLEN>)etiss_semihost(XLEN, operation, parameter);
+                    X[10] = (unsigned<XLEN>)((signed<XLEN>)etiss_semihost(XLEN, operation, parameter));
                     } else {
                         raise(0, RV_CAUSE_BREAKPOINT);
                     }

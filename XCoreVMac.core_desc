@@ -18,7 +18,7 @@ InstructionSet XCoreVMac extends RISCVBase {
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}";
             behavior: {
               // signed<65> result = (signed)X[rd] - (signed)X[rs1] * (signed)X[rs2] ;
-              signed<64> result = (signed)X[rd] - (signed)X[rs1] * (signed)X[rs2] ;
+              signed<65> result = (signed)X[rd] - (signed)X[rs1] * (signed)X[rs2] ;
               if(rd != 0) X[rd] = result[31:0];
             }
         }
@@ -59,10 +59,10 @@ InstructionSet XCoreVMac extends RISCVBase {
             encoding: 2'b10:: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b101 :: rd[4:0] :: 7'b1011011;
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
-                signed<31> product = (unsigned)X[rs1][15:0] * (unsigned)X[rs2][15:0];
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
-                unsigned<32> sum = product + powerOf2;
-                unsigned<32> rounded = sum >> Is3;
+                unsigned<32> product = (unsigned)X[rs1][15:0] * (unsigned)X[rs2][15:0];
+                unsigned<32> powerOf2 = (unsigned<32>)(Is3 == 0 ? 0 : ((unsigned<32>)1 << (Is3 - 1)));
+                unsigned<64> sum = (unsigned<64>)((unsigned<64>)product + (unsigned<64>)powerOf2);
+                unsigned<64> rounded = sum >> Is3;
 
                 X[rd] = rounded[31:0];
             }
@@ -71,10 +71,10 @@ InstructionSet XCoreVMac extends RISCVBase {
             encoding: 2'b11:: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b101 :: rd[4:0] :: 7'b1011011;
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
-                signed<31> product = (unsigned)X[rs1][31:16] * (unsigned)X[rs2][31:16];
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
-                unsigned<32> sum = product + powerOf2;
-                unsigned<32> rounded = sum >> Is3;
+                unsigned<32> product = (unsigned)X[rs1][31:16] * (unsigned)X[rs2][31:16];
+                unsigned<32> powerOf2 = (unsigned<32>)(Is3 == 0 ? 0 : ((unsigned<32>)1 << (Is3 - 1)));
+                unsigned<64> sum = (unsigned<64>)((unsigned<64>)product + (unsigned<64>)powerOf2);
+                unsigned<64> rounded = sum >> Is3;
 
                 X[rd] = rounded[31:0];
             }
@@ -83,10 +83,10 @@ InstructionSet XCoreVMac extends RISCVBase {
             encoding: 2'b10:: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b100 :: rd[4:0] :: 7'b1011011;
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
-                signed<31> product = (signed)X[rs1][15:0] * (signed)X[rs2][15:0];
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
-                signed<32> sum = product + powerOf2;
-                signed<32> rounded = sum >> Is3;
+                signed<32> product = (signed)X[rs1][15:0] * (signed)X[rs2][15:0];
+                unsigned<32> powerOf2 = (unsigned<32>)(Is3 == 0 ? 0 : ((unsigned<32>)1 << (Is3 - 1)));
+                signed<64> sum = (signed<64>)((signed<64>)product + (signed<64>)powerOf2);
+                signed<64> rounded = sum >> Is3;
 
                 X[rd] = rounded[31:0];
             }
@@ -95,10 +95,10 @@ InstructionSet XCoreVMac extends RISCVBase {
             encoding: 2'b11:: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b100 :: rd[4:0] :: 7'b1011011;
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
-                signed<31> product = (signed)X[rs1][31:16] * (signed)X[rs2][31:16];
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
-                signed<32> sum = product + powerOf2;
-                signed<32> rounded = sum >> Is3;
+                signed<32> product = (signed)X[rs1][31:16] * (signed)X[rs2][31:16];
+                unsigned<32> powerOf2 = (unsigned<32>)(Is3 == 0 ? 0 : ((unsigned<32>)1 << (Is3 - 1)));
+                signed<64> sum = (signed<64>)((signed<64>)product + (signed<64>)powerOf2);
+                signed<64> rounded = sum >> Is3;
 
                 X[rd] = rounded[31:0];
             }
@@ -108,7 +108,9 @@ InstructionSet XCoreVMac extends RISCVBase {
             encoding: 2'b00 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1011011;
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
-              unsigned<32> result = ((unsigned)X[rs1][15:0] * (unsigned)X[rs2][15:0] + (unsigned)X[rd]) >> Is3;
+              unsigned<32> product = (unsigned)X[rs1][15:0] * (unsigned)X[rs2][15:0];
+              unsigned<64> sum = (unsigned<64>)((unsigned<64>)product + (unsigned<64>)(unsigned)X[rd]);
+              unsigned<64> result = sum >> Is3;
               if(rd != 0) X[rd] = result[31:0];
             }
         }
@@ -116,70 +118,76 @@ InstructionSet XCoreVMac extends RISCVBase {
             encoding: 2'b01 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1011011;
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
-              unsigned<32> result = ((unsigned)X[rs1][31:16] * (unsigned)X[rs2][31:16] + (unsigned)X[rd]) >> Is3;
+              unsigned<32> product = (unsigned)X[rs1][31:16] * (unsigned)X[rs2][31:16];
+              unsigned<64> sum = (unsigned<64>)((unsigned<64>)product + (unsigned<64>)(unsigned)X[rd]);
+              unsigned<64> result = sum >> Is3;
               if(rd != 0) X[rd] = result[31:0];
             }
         }
         CV_MACSN {
-            encoding: 2'b10 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
+            encoding: 2'b00 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b110 :: rd[4:0] :: 7'b1011011;
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
-              signed<32> result = ((signed)X[rs1][15:0] * (signed)X[rs2][15:0] + (signed)X[rd]) >> Is3;
+              signed<32> product = (signed)X[rs1][15:0] * (signed)X[rs2][15:0];
+              signed<64> sum = (signed<64>)((signed<64>)product + (signed<64>)(signed)X[rd]);
+              signed<64> result = sum >> Is3;
               if(rd != 0) X[rd] = result[31:0];
             }
         }
         CV_MACHHSN {
-            encoding: 2'b11 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
+            encoding: 2'b01 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b110 :: rd[4:0] :: 7'b1011011;
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
-              signed<32> result = ((signed)X[rs1][31:16] * (signed)X[rs2][31:16] + (signed)X[rd]) >> Is3;
+              signed<32> product = (signed)X[rs1][31:16] * (signed)X[rs2][31:16];
+              signed<64> sum = (signed<64>)((signed<64>)product + (signed<64>)(signed)X[rd]);
+              signed<64> result = sum >> Is3;
               if(rd != 0) X[rd] = result[31:0];
             }
         }
         CV_MACURN {
-            encoding: 2'b10 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b110 :: rd[4:0] :: 7'b1011011;
+            encoding: 2'b10 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1011011;
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
-                unsigned<30> product = (unsigned)(X[rs1][15:0]) * (unsigned)(X[rs2][15:0]);
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
-                unsigned<33> sum = product + (unsigned)X[rd] + powerOf2;
-                unsigned<33> rounded = sum >> Is3;
+                unsigned<32> product = (unsigned)(X[rs1][15:0]) * (unsigned)(X[rs2][15:0]);
+                unsigned<32> powerOf2 = (unsigned<32>)(Is3 == 0 ? 0 : ((unsigned<32>)1 << (Is3 - 1)));
+                unsigned<64> sum = (unsigned<64>)((unsigned<64>)product + (unsigned<64>)X[rd] + (unsigned<64>)powerOf2);
+                unsigned<64> rounded = sum >> Is3;
 
                 X[rd] = rounded[31:0];
             }
         }
         CV_MACHHURN {
-            encoding: 2'b11 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b110 :: rd[4:0] :: 7'b1011011;
+            encoding: 2'b11 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1011011;
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
-                unsigned<30> product = (unsigned)(X[rs1][31:16]) * (unsigned)(X[rs2][31:16]);
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
-                unsigned<33> sum = product + (unsigned)X[rd] + powerOf2;
-                unsigned<33> rounded = sum >> Is3;
+                unsigned<32> product = (unsigned)(X[rs1][31:16]) * (unsigned)(X[rs2][31:16]);
+                unsigned<32> powerOf2 = (unsigned<32>)(Is3 == 0 ? 0 : ((unsigned<32>)1 << (Is3 - 1)));
+                unsigned<64> sum = (unsigned<64>)((unsigned<64>)product + (unsigned<64>)X[rd] + (unsigned<64>)powerOf2);
+                unsigned<64> rounded = sum >> Is3;
 
                 X[rd] = rounded[31:0];
             }
         }
         CV_MACSRN {
-            encoding: 2'b10 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1011011;
+            encoding: 2'b10 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b110 :: rd[4:0] :: 7'b1011011;
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
-                signed<31> product = (signed)X[rs1][15:0] * (signed)X[rs2][15:0];
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
-                signed<32> sum = product + (signed)X[rd] + powerOf2;
-                signed<32> rounded = sum >> Is3;
+                signed<32> product = (signed)X[rs1][15:0] * (signed)X[rs2][15:0];
+                unsigned<32> powerOf2 = (unsigned<32>)(Is3 == 0 ? 0 : ((unsigned<32>)1 << (Is3 - 1)));
+                signed<64> sum = (signed<64>)((signed<64>)product + (signed<64>)(signed)X[rd] + (signed<64>)powerOf2);
+                signed<64> rounded = sum >> Is3;
 
                 X[rd] = rounded[31:0];
             }
         }
         CV_MACHHSRN {
-            encoding: 2'b11 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1011011;
+            encoding: 2'b11 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b110 :: rd[4:0] :: 7'b1011011;
             assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
             behavior: {
-                signed<31> product = (signed)X[rs1][31:16] * (signed)X[rs2][31:16];
-                unsigned<30> powerOf2 = 1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
-                signed<32> sum = product + (signed)X[rd] + powerOf2;
-                signed<32> rounded = sum >> Is3;
+                signed<32> product = (signed)X[rs1][31:16] * (signed)X[rs2][31:16];
+                unsigned<32> powerOf2 = (unsigned<32>)(Is3 == 0 ? 0 : ((unsigned<32>)1 << (Is3 - 1)));
+                signed<64> sum = (signed<64>)((signed<64>)product + (signed<64>)(signed)X[rd] + (signed<64>)powerOf2);
+                signed<64> rounded = sum >> Is3;
 
                 X[rd] = rounded[31:0];
             }

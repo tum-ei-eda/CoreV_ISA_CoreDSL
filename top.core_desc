@@ -19,7 +19,7 @@ Core RV32IMACFDXCoreV provides RV32I, RV32IC, RV32M, RV32F, RV32FC, RV32D, RV32D
         CSR[0xC10] = 0x00000003;
 
         CSR[RV_CSR_MIE] = 0xFFFFFBBB; // mie
-        CSR[RV_CSR_SIE] = CSR[0x304] & (~(0x888)); // sie
-        CSR[0x004] = CSR[0x304] & (~(0xAAA)); // uie
+        CSR[RV_CSR_SIE] = CSR[0x304] & 32'hfffff777; // sie
+        CSR[0x004] = CSR[0x304] & 32'hfffff555; // uie
     }
 }
