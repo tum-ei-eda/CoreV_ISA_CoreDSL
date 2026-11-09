@@ -22,35 +22,35 @@ InstructionSet XCoreVMac extends RV32I {
         // 16-Bit x 16-Bit Multiplication
         CV_MULUN {
             encoding: 2'b00 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b101 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.mulun", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
               if(rd != 0) X[rd] = (unsigned<32>)(((unsigned)X[rs1][15:0] * (unsigned)X[rs2][15:0]) >> Is3)[31:0];
             }
         }
         CV_MULHHUN {
             encoding: 2'b01 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b101 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.mulhhun", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
               if(rd != 0) X[rd] = (unsigned<32>)(((unsigned)X[rs1][31:16] * (unsigned)X[rs2][31:16]) >> Is3)[31:0];
             }
         }
         CV_MULSN {
             encoding: 2'b00 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b100 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.mulsn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
               if(rd != 0) X[rd] = (unsigned<32>)(((signed)X[rs1][15:0] * (signed)X[rs2][15:0]) >> Is3)[31:0];
             }
         }
         CV_MULHHSN {
             encoding: 2'b01 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b100 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.mulhhsn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
               if(rd != 0) X[rd] = (unsigned<32>)(((signed)X[rs1][31:16] * (signed)X[rs2][31:16]) >> Is3)[31:0];
             }
         }
         CV_MULURN {
             encoding: 2'b10:: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b101 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.mulurn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
                 // signed<31> product = (unsigned)X[rs1][15:0] * (unsigned)X[rs2][15:0];
                 // unsigned<30> powerOf2 = (unsigned<32>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
@@ -62,7 +62,7 @@ InstructionSet XCoreVMac extends RV32I {
         }
         CV_MULHHURN {
             encoding: 2'b11:: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b101 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.mulhhurn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
                 // signed<31> product = (unsigned)X[rs1][31:16] * (unsigned)X[rs2][31:16];
                 // unsigned<30> powerOf2 = (unsigned<30>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
@@ -74,7 +74,7 @@ InstructionSet XCoreVMac extends RV32I {
         }
         CV_MULSRN {
             encoding: 2'b10:: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b100 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.mulsrn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
                 // signed<31> product = (signed)X[rs1][15:0] * (signed)X[rs2][15:0];
                 // unsigned<30> powerOf2 = (unsigned<30>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
@@ -86,7 +86,7 @@ InstructionSet XCoreVMac extends RV32I {
         }
         CV_MULHHSRN {
             encoding: 2'b11:: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b100 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.mulhhsrn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
                 // signed<31> product = (signed)X[rs1][31:16] * (signed)X[rs2][31:16];
                 // unsigned<30> powerOf2 = (unsigned<30>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
@@ -99,35 +99,35 @@ InstructionSet XCoreVMac extends RV32I {
         // 16-Bit x 16-Bit Multiply-Accumulate
         CV_MACUN {
             encoding: 2'b00 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.macun", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
               if(rd != 0) X[rd] = (unsigned<32>)(((unsigned)X[rs1][15:0] * (unsigned)X[rs2][15:0] + (unsigned)X[rd]) >> Is3)[31:0];
             }
         }
         CV_MACHHUN {
             encoding: 2'b01 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.machhun", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
-              if(rd != 0) X[rd] = (unsigned<31>)(((unsigned)X[rs1][31:16] * (unsigned)X[rs2][31:16] + (unsigned)X[rd]) >> Is3)[31:0];
+              if(rd != 0) X[rd] = (unsigned<32>)(((unsigned)X[rs1][31:16] * (unsigned)X[rs2][31:16] + (unsigned)X[rd]) >> Is3)[31:0];
             }
         }
         CV_MACSN {
             encoding: 2'b10 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.macsn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
               if(rd != 0) X[rd] = (unsigned<32>)(((signed)X[rs1][15:0] * (signed)X[rs2][15:0] + (signed)X[rd]) >> Is3)[31:0];
             }
         }
         CV_MACHHSN {
             encoding: 2'b11 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.machhsn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
               if(rd != 0) X[rd] = (unsigned<32>)(((signed)X[rs1][31:16] * (signed)X[rs2][31:16] + (signed)X[rd]) >> Is3)[31:0];
             }
         }
         CV_MACURN {
             encoding: 2'b10 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b110 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.macurn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
                 // unsigned<30> product = (unsigned)(X[rs1][15:0]) * (unsigned)(X[rs2][15:0]);
                 // unsigned<30> powerOf2 = (unsigned<30>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
@@ -139,7 +139,7 @@ InstructionSet XCoreVMac extends RV32I {
         }
         CV_MACHHURN {
             encoding: 2'b11 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b110 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.machhurn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
                 // unsigned<30> product = (unsigned)(X[rs1][31:16]) * (unsigned)(X[rs2][31:16]);
                 // unsigned<30> powerOf2 = (unsigned<30>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
@@ -151,7 +151,7 @@ InstructionSet XCoreVMac extends RV32I {
         }
         CV_MACSRN {
             encoding: 2'b10 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.macsrn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
                 // signed<31> product = (signed)X[rs1][15:0] * (signed)X[rs2][15:0];
                 // unsigned<30> powerOf2 = (unsigned<30>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
@@ -163,7 +163,7 @@ InstructionSet XCoreVMac extends RV32I {
         }
         CV_MACHHSRN {
             encoding: 2'b11 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1011011;
-            assembly:"{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}";
+            assembly: {"cv.machhsrn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
                 // signed<31> product = (signed)X[rs1][31:16] * (signed)X[rs2][31:16];
                 // unsigned<30> powerOf2 = (unsigned<30>)1 << (Is3-1);  // TODO: Is3 = max(Is3, 1)
