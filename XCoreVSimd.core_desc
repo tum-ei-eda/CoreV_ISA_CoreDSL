@@ -1252,12 +1252,11 @@ InstructionSet XCoreVSimd extends RV32I {
             encoding: 5'b10011 :: 1'b0 :: Imm6[0:0] :: Imm6[5:1] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.sdotup.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
-                if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] +
-                    ((unsigned)X[rs1][ 7: 0] * (unsigned)((unsigned<8>)((signed)Imm6))) +
-                    ((unsigned)X[rs1][15: 8] * (unsigned)((unsigned<8>)((signed)Imm6))) +
-                    ((unsigned)X[rs1][23:16] * (unsigned)((unsigned<8>)((signed)Imm6))) +
-                    ((unsigned)X[rs1][31:24] * (unsigned)((unsigned<8>)((signed)Imm6)))));
+                unsigned<8> scalar = (unsigned<8>)((signed)Imm6);
+                // Share the scalar multiply instead of expanding four commutable products.
+                unsigned<10> lanes = (unsigned)X[rs1][7:0] + (unsigned)X[rs1][15:8]
+                    + (unsigned)X[rs1][23:16] + (unsigned)X[rs1][31:24];
+                if (rd != 0) X[rd] = (unsigned<32>)(X[rd] + scalar * lanes);
             }
         }
         CV_SDOTUSP_H {
