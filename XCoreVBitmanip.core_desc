@@ -4,13 +4,12 @@ import "RVI.core_desc"
 // InstructionSet XCoreVBitmanip extends RISCVBase {
 InstructionSet XCoreVBitmanip extends RV32I {
     functions {
+        // Rotate counts use their low five bits; both shifts stay in 0..31.
         unsigned<32> rotl32(unsigned<32> x, unsigned<32> n) [[inline]] {
-            return (x << n) | (x >> (32 - n));
-            // return (x << n) | (x >> (-(n)&31));
+            return (x << (n & 31)) | (x >> ((32 - n) & 31));
         }
         unsigned<32> rotr32(unsigned<32> x, unsigned<32> n) [[inline]] {
-            return (x >> n) | (x << (32 - n));
-            // return (x >> n) | (x << (-(n)&31));
+            return (x >> (n & 31)) | (x << ((32 - n) & 31));
         }
     }
     instructions {
