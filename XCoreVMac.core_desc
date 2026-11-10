@@ -20,7 +20,7 @@ InstructionSet XCoreVMac extends RV32I {
             }
         }
         // 16-Bit x 16-Bit Multiplication
-        CV_MULUN {
+        CV_MULUN [[auto_unroll_imm]] {
             encoding: 2'b00 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b101 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.mulun", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
@@ -29,7 +29,7 @@ InstructionSet XCoreVMac extends RV32I {
                 if(rd != 0) X[rd] = (unsigned<32>)(result >> Is3);
             }
         }
-        CV_MULHHUN {
+        CV_MULHHUN [[auto_unroll_imm]] {
             encoding: 2'b01 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b101 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.mulhhun", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
@@ -38,7 +38,7 @@ InstructionSet XCoreVMac extends RV32I {
                 if(rd != 0) X[rd] = (unsigned<32>)(result >> Is3);
             }
         }
-        CV_MULSN {
+        CV_MULSN [[auto_unroll_imm]] {
             encoding: 2'b00 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b100 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.mulsn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
@@ -47,7 +47,7 @@ InstructionSet XCoreVMac extends RV32I {
                 if(rd != 0) X[rd] = (unsigned<32>)(result >> Is3);
             }
         }
-        CV_MULHHSN {
+        CV_MULHHSN [[auto_unroll_imm]] {
             encoding: 2'b01 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b100 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.mulhhsn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
