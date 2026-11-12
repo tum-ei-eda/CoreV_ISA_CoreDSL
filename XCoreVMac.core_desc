@@ -56,7 +56,7 @@ InstructionSet XCoreVMac extends RV32I {
                 if(rd != 0) X[rd] = (unsigned<32>)(result >> Is3);
             }
         }
-        CV_MULURN {
+        CV_MULURN [[auto_unroll_imm]] {
             encoding: 2'b10:: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b101 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.mulurn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
@@ -68,7 +68,7 @@ InstructionSet XCoreVMac extends RV32I {
                 if(rd != 0) X[rd] = (unsigned<32>)(result >> Is3);
             }
         }
-        CV_MULHHURN {
+        CV_MULHHURN [[auto_unroll_imm]] {
             encoding: 2'b11:: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b101 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.mulhhurn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
@@ -80,7 +80,7 @@ InstructionSet XCoreVMac extends RV32I {
                 if(rd != 0) X[rd] = (unsigned<32>)(result >> Is3);
             }
         }
-        CV_MULSRN {
+        CV_MULSRN [[auto_unroll_imm]] {
             encoding: 2'b10:: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b100 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.mulsrn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
@@ -92,7 +92,7 @@ InstructionSet XCoreVMac extends RV32I {
                 if(rd != 0) X[rd] = (unsigned<32>)(result >> Is3);
             }
         }
-        CV_MULHHSRN {
+        CV_MULHHSRN [[auto_unroll_imm]] {
             encoding: 2'b11:: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b100 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.mulhhsrn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
@@ -145,7 +145,7 @@ InstructionSet XCoreVMac extends RV32I {
                 if(rd != 0) X[rd] = (unsigned<32>)(result >> Is3);
             }
         }
-        CV_MACURN {
+        CV_MACURN [[auto_unroll_imm]] {
             encoding: 2'b10 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.macurn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
@@ -158,7 +158,7 @@ InstructionSet XCoreVMac extends RV32I {
                 if(rd != 0) X[rd] = (unsigned<32>)(result >> Is3);
             }
         }
-        CV_MACHHURN {
+        CV_MACHHURN [[auto_unroll_imm]] {
             encoding: 2'b11 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.machhurn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
@@ -171,7 +171,7 @@ InstructionSet XCoreVMac extends RV32I {
                 if(rd != 0) X[rd] = (unsigned<32>)(result >> Is3);
             }
         }
-        CV_MACSRN {
+        CV_MACSRN [[auto_unroll_imm]] {
             encoding: 2'b10 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b110 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.macsrn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
@@ -184,7 +184,7 @@ InstructionSet XCoreVMac extends RV32I {
                 if(rd != 0) X[rd] = (unsigned<32>)(result >> Is3);
             }
         }
-        CV_MACHHSRN {
+        CV_MACHHSRN [[auto_unroll_imm]] {
             encoding: 2'b11 :: Is3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b110 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.machhsrn", "{name(rd)}, {name(rs1)}, {name(rs2)}, {Is3}"};
             behavior: {
