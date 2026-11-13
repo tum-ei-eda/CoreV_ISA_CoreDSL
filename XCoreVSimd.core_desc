@@ -1,4 +1,15 @@
-InstructionSet XCoreVSimd extends RISCVBase {
+// import "../rv_base/RISCVBase.core_desc"
+import "RVI.core_desc"
+
+// InstructionSet XCoreVSimd extends RISCVBase {
+InstructionSet XCoreVSimd extends RV32I {
+    // architectural_state {
+    //     // register unsigned<32> &XV2 = X[31:0] [[ty=u32]] [[class=GPR32V2]] [[lanes=2]];
+    //     // register unsigned<32> &XV4 = X[31:0] [[ty=u32]] [[class=GPR32V4]] [[lanes=4]];
+    //     // Not allowed in CoreDSL2 (needs arbitrary packed/unpacked casts, flatten)
+    //     // Alternative approach via union casts (see verilog union_packed)
+    //     // https://www.verilogpro.com/systemverilog-structures-unions-design/
+    // }
     instructions {
         // SOURCE FILE: instr_srcs/XCoreVSIMD_ALU.txt
         CV_ADD_H {
@@ -1245,12 +1256,11 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b10011 :: 1'b0 :: Imm6[0:0] :: Imm6[5:1] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.sdotup.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
-                if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] +
-                    ((unsigned)X[rs1][ 7: 0] * (unsigned)((unsigned<8>)((signed)Imm6))) +
-                    ((unsigned)X[rs1][15: 8] * (unsigned)((unsigned<8>)((signed)Imm6))) +
-                    ((unsigned)X[rs1][23:16] * (unsigned)((unsigned<8>)((signed)Imm6))) +
-                    ((unsigned)X[rs1][31:24] * (unsigned)((unsigned<8>)((signed)Imm6)))));
+                unsigned<8> scalar = (unsigned<8>)((signed)Imm6);
+                // Share the scalar multiply instead of expanding four commutable products.
+                unsigned<10> lanes = (unsigned<10>)((unsigned)X[rs1][7:0] + (unsigned)X[rs1][15:8]
+                    + (unsigned)X[rs1][23:16] + (unsigned)X[rs1][31:24]);
+                if (rd != 0) X[rd] = (unsigned<32>)(X[rd] + scalar * lanes);
             }
         }
         CV_SDOTUSP_H {
@@ -2254,6 +2264,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             behavior: {
                 if (rd != 0) {
                     X[rd][15: 0] = (((signed)X[rs1][15: 0] * (signed)X[rs2][15: 0] - (signed)X[rs1][31:16] * (signed)X[rs2][31:16]) >> 15)[15:0];
+                    X[rd][31:16] = X[rd][31:16];  // explicit copy to detect inout properly
                 }
             }
         }
@@ -2263,6 +2274,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             behavior: {
                 if (rd != 0) {
                     X[rd][15: 0] = (((signed)X[rs1][15: 0] * (signed)X[rs2][15: 0] - (signed)X[rs1][31:16] * (signed)X[rs2][31:16]) >> 16)[15:0];
+                    X[rd][31:16] = X[rd][31:16];  // explicit copy to detect inout properly
                 }
             }
         }
@@ -2272,6 +2284,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             behavior: {
                 if (rd != 0) {
                     X[rd][15: 0] = (((signed)X[rs1][15: 0] * (signed)X[rs2][15: 0] - (signed)X[rs1][31:16] * (signed)X[rs2][31:16]) >> 17)[15:0];
+                    X[rd][31:16] = X[rd][31:16];  // explicit copy to detect inout properly
                 }
             }
         }
@@ -2281,6 +2294,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             behavior: {
                 if (rd != 0) {
                     X[rd][15: 0] = (((signed)X[rs1][15: 0] * (signed)X[rs2][15: 0] - (signed)X[rs1][31:16] * (signed)X[rs2][31:16]) >> 18)[15:0];
+                    X[rd][31:16] = X[rd][31:16];  // explicit copy to detect inout properly
                 }
             }
         }
@@ -2289,6 +2303,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.cplxmul.i", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
+                    X[rd][15:0] = X[rd][15:0];  // explicit copy to detect inout properly
                     X[rd][31:16] = (((signed)X[rs1][15: 0] * (signed)X[rs2][31:16] - (signed)X[rs1][31:16] * (signed)X[rs2][15: 0]) >> 15)[15:0];
                 }
             }
@@ -2298,6 +2313,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.cplxmul.i.div2", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
+                    X[rd][15:0] = X[rd][15:0];  // explicit copy to detect inout properly
                     X[rd][31:16] = (((signed)X[rs1][15: 0] * (signed)X[rs2][31:16] - (signed)X[rs1][31:16] * (signed)X[rs2][15: 0]) >> 16)[15:0];
                 }
             }
@@ -2307,6 +2323,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.cplxmul.i.div4", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
+                    X[rd][15:0] = X[rd][15:0];  // explicit copy to detect inout properly
                     X[rd][31:16] = (((signed)X[rs1][15: 0] * (signed)X[rs2][31:16] - (signed)X[rs1][31:16] * (signed)X[rs2][15: 0]) >> 17)[15:0];
                 }
             }
@@ -2316,6 +2333,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.cplxmul.i.div8", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
+                    X[rd][15:0] = X[rd][15:0];  // explicit copy to detect inout properly
                     X[rd][31:16] = (((signed)X[rs1][15: 0] * (signed)X[rs2][31:16] - (signed)X[rs1][31:16] * (signed)X[rs2][15: 0]) >> 18)[15:0];
                 }
             }

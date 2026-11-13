@@ -35,7 +35,7 @@ InstructionSet XCoreVHwlp extends RV32I {
     instructions {
         CV_STARTI {
             encoding: uimmL[11:0] :: rs1[4:0] :: 3'b100 :: 4'b0000 :: L[0:0] :: 7'b0101011;
-            assembly: "{L}, {uimmL}";
+            assembly: {"cv.starti", "{L}, {uimmL}"};
             behavior: {
                 if (L == 0) {
                     if (lpstart_0 % HWLP_INSTR_ALIGNMENT) {
@@ -54,7 +54,7 @@ InstructionSet XCoreVHwlp extends RV32I {
         }
         CV_START {
             encoding: 12'b000000000000 :: rs1[4:0] :: 3'b100 :: 4'b0001 :: L[0:0] :: 7'b0101011;
-            assembly: "{L}, {name(rs1)}";
+            assembly: {"cv.start", "{L}, {name(rs1)}"};
             behavior: {
                 if (L == 0) {
                     if (lpstart_0 % HWLP_INSTR_ALIGNMENT) {
