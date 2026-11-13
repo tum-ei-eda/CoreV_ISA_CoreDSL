@@ -6,7 +6,7 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
             assembly: {"cv.extract", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd] = (signed<32>)(((X[rs1] >> Iuimm5) & ((2 << Luimm5) - 1)) << (31 - Luimm5)) >> (31 - Luimm5);
+                    X[rd] = (unsigned<32>)((signed<32>)(((X[rs1] >> Iuimm5) & ((2 << Luimm5) - 1)) << (31 - Luimm5)) >> (31 - Luimm5));
                 }
             }
         }
@@ -75,12 +75,12 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                     unsigned<6> width = Luimm5 + 1;
 
                     if (width > (32 - Iuimm5)) {
-                        width = 32 - Iuimm5;
+                        width = (unsigned<6>)(32 - Iuimm5);
                     }
 
                     while (i < width) {
                         mask = mask | (1 << (Iuimm5 + i));
-                        i = i + 1;
+                        i = (unsigned<6>)(i + 1);
                     }
 
                     X[rd] = (X[rd] & ~mask) |
@@ -99,12 +99,12 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                     unsigned<6> width = Luimm5 + 1;
 
                     if (width > (32 - Iuimm5)) {
-                        width = 32 - Iuimm5;
+                        width = (unsigned<6>)(32 - Iuimm5);
                     }
 
                     while (i < width) {
                         mask = mask | (1 << (Iuimm5 + i));
-                        i = i + 1;
+                        i = (unsigned<6>)(i + 1);
                     }
 
                     X[rd] = X[rs1] & ~mask;
@@ -122,12 +122,12 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                     unsigned<6> width = Luimm5 + 1;
 
                     if (width > (32 - Iuimm5)) {
-                        width = 32 - Iuimm5;
+                        width = (unsigned<6>)(32 - Iuimm5);
                     }
 
                     while (i < width) {
                         mask = mask | (1 << (Iuimm5 + i));
-                        i = i + 1;
+                        i = (unsigned<6>)(i + 1);
                     }
 
                     X[rd] = X[rs1] | mask;
@@ -166,7 +166,7 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                     chunkWidth = firstWidth;
 
                     while (sourceBase < 32) {
-                        destinationBase = 32 - sourceBase - chunkWidth;
+                        destinationBase = (unsigned<6>)(32 - sourceBase - chunkWidth);
                         i = 0;
 
                         // Preserve the bit order within each group.
@@ -175,10 +175,10 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                                 result = result |
                                          (1 << (destinationBase + i));
                             }
-                            i = i + 1;
+                            i = (unsigned<6>)(i + 1);
                         }
 
-                        sourceBase = sourceBase + chunkWidth;
+                        sourceBase = (unsigned<6>)(sourceBase + chunkWidth);
                         chunkWidth = groupWidth;
                     }
 
@@ -192,7 +192,7 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
             assembly: {"cv.extractr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd] = (signed<32>)(((X[rs1] >> X[rs2][31: 0][4:0]) & ((2 << X[rs2][31: 0][9:5]) - 1)) << (31 - X[rs2][31: 0][9:5])) >> (31 - X[rs2][31: 0][9:5]);
+                    X[rd] = (unsigned<32>)((signed<32>)(((X[rs1] >> X[rs2][31: 0][4:0]) & ((2 << X[rs2][31: 0][9:5]) - 1)) << (31 - X[rs2][31: 0][9:5])) >> (31 - X[rs2][31: 0][9:5]));
                 }
             }
         }
@@ -264,12 +264,12 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                     unsigned<6> i = 0;
 
                     if (width > (32 - offset)) {
-                        width = 32 - offset;
+                        width = (unsigned<6>)(32 - offset);
                     }
 
                     while (i < width) {
                         mask = mask | (1 << (offset + i));
-                        i = i + 1;
+                        i = (unsigned<6>)(i + 1);
                     }
 
                     X[rd] = (X[rd] & ~mask) |
@@ -289,12 +289,12 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                     unsigned<6> i = 0;
 
                     if (width > (32 - offset)) {
-                        width = 32 - offset;
+                        width = (unsigned<6>)(32 - offset);
                     }
 
                     while (i < width) {
                         mask = mask | (1 << (offset + i));
-                        i = i + 1;
+                        i = (unsigned<6>)(i + 1);
                     }
 
                     X[rd] = X[rs1] & ~mask;
@@ -313,12 +313,12 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                     unsigned<6> i = 0;
 
                     if (width > (32 - offset)) {
-                        width = 32 - offset;
+                        width = (unsigned<6>)(32 - offset);
                     }
 
                     while (i < width) {
                         mask = mask | (1 << (offset + i));
-                        i = i + 1;
+                        i = (unsigned<6>)(i + 1);
                     }
 
                     X[rd] = X[rs1] | mask;
@@ -355,7 +355,7 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                             (((X[rs1] >> i) & 1) != 0)) {
                             result = i;
                         }
-                        i = i + 1;
+                        i = (unsigned<6>)(i + 1);
                     }
 
                     X[rd] = result;
@@ -375,7 +375,7 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                         if (((X[rs1] >> i) & 1) != 0) {
                             result = i;
                         }
-                        i = i + 1;
+                        i = (unsigned<6>)(i + 1);
                     }
 
                     X[rd] = result;
@@ -418,9 +418,9 @@ InstructionSet XCoreVBitmanip extends RISCVBase {
                     unsigned<6> i = 0;
 
                     while (i < 32) {
-                        result = result +
-                                 ((X[rs1] >> i) & 1);
-                        i = i + 1;
+                        result = (unsigned<6>)(result +
+                                 ((X[rs1] >> i) & 1));
+                        i = (unsigned<6>)(i + 1);
                     }
 
                     X[rd] = result;

@@ -106,11 +106,10 @@ InstructionSet XCoreVAlu extends RISCVBase {
             assembly: {"cv.clip", "{name(rd)}, {name(rs1)}, {Iuimm5}" };
             behavior: {
                 if (rd != 0) {
-                    signed<32> a = (Iuimm5) ? -(1 << (Iuimm5 - 1)) : -1;
-                    signed<32> b = (Iuimm5) ? ((1 << (Iuimm5 - 1)) - 1) : 0;
-                    if ((signed)X[rs1] <= a) X[rd] = a;
-                    else if ((signed)X[rs1] >= b) X[rd] = b;
-                    else X[rd] = X[rs1];
+                    signed<32> a = (signed<32>)((Iuimm5) ? -((unsigned<32>)1 << (Iuimm5 - 1)) : -1);
+                    signed<32> b = (signed<32>)((Iuimm5) ? (((unsigned<32>)1 << (Iuimm5 - 1)) - 1) : 0);
+                    signed<32> value = ((signed)X[rs1] < a) ? a : (signed)X[rs1];
+                    X[rd] = (unsigned<32>)((value > b) ? b : value);
                 }
             }
         }
@@ -120,10 +119,9 @@ InstructionSet XCoreVAlu extends RISCVBase {
             behavior: {
                 if (rd != 0) {
                     signed<32> a = 0;
-                    signed<32> b = (Iuimm5) ? ((1 << (Iuimm5 - 1)) - 1) : 0;
-                    if ((signed)X[rs1] <= a) X[rd] = a;
-                    else if ((signed)X[rs1] >= b) X[rd] = b;
-                    else X[rd] = X[rs1];
+                    signed<32> b = (signed<32>)((Iuimm5) ? (((unsigned<32>)1 << (Iuimm5 - 1)) - 1) : 0);
+                    signed<32> value = ((signed)X[rs1] < a) ? a : (signed)X[rs1];
+                    X[rd] = (unsigned<32>)((value > b) ? b : value);
                 }
             }
         }
@@ -132,11 +130,11 @@ InstructionSet XCoreVAlu extends RISCVBase {
             assembly: {"cv.clipr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    signed<32> a = -(X[rs2][31: 0] + 1);
-                    signed<32> b = X[rs2][31: 0];
-                    if ((signed)X[rs1] <= a) X[rd] = a;
-                    else if ((signed)X[rs1] >= b) X[rd] = b;
-                    else X[rd] = X[rs1];
+                    // CORE-V ignores the bound register sign bit.
+                    signed<32> b = (unsigned<31>)X[rs2][30:0];
+                    signed<32> a = ~b;
+                    signed<32> value = ((signed)X[rs1] < a) ? a : (signed)X[rs1];
+                    X[rd] = (unsigned<32>)((value > b) ? b : value);
                 }
             }
         }
@@ -146,10 +144,10 @@ InstructionSet XCoreVAlu extends RISCVBase {
             behavior: {
                 if (rd != 0) {
                     signed<32> a = 0;
-                    signed<32> b = X[rs2][31: 0];
-                    if ((signed)X[rs1] <= a) X[rd] = a;
-                    else if ((signed)X[rs1] >= b) X[rd] = b;
-                    else X[rd] = X[rs1];
+                    // CORE-V ignores the bound register sign bit.
+                    signed<32> b = (unsigned<31>)X[rs2][30:0];
+                    signed<32> value = ((signed)X[rs1] < a) ? a : (signed)X[rs1];
+                    X[rd] = (unsigned<32>)((value > b) ? b : value);
                 }
             }
         }
