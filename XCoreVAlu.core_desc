@@ -10,18 +10,18 @@ InstructionSet XCoreVAlu extends RISCVBase {
                 }
             }
         }
-        CV_SLET {
+        CV_SLE {
             encoding: 7'b0101001 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
-            assembly: {"cv.slet", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
+            assembly: {"cv.sle", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
                     X[rd] = (unsigned<1>)((signed)X[rs1] <= (signed)X[rs2][31: 0]);
                 }
             }
         }
-        CV_SLETU {
+        CV_SLEU {
             encoding: 7'b0101010 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
-            assembly: {"cv.sletu", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
+            assembly: {"cv.sleu", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
                     X[rd] = (unsigned<1>)((unsigned)X[rs1] <= (unsigned)X[rs2][31: 0]);
@@ -106,11 +106,10 @@ InstructionSet XCoreVAlu extends RISCVBase {
             assembly: {"cv.clip", "{name(rd)}, {name(rs1)}, {Iuimm5}" };
             behavior: {
                 if (rd != 0) {
-                    signed<32> a = (Iuimm5) ? -(1 << (Iuimm5 - 1)) : -1;
-                    signed<32> b = (Iuimm5) ? ((1 << (Iuimm5 - 1)) - 1) : 0;
-                    if (X[rs1] <= a) X[rd] = (unsigned<XLEN>)(a);
-                    else if (X[rs1] >= b) X[rd] = (unsigned<XLEN>)(b);
-                    else X[rd] = X[rs1];
+                    signed<32> a = (signed<32>)((Iuimm5) ? -((unsigned<32>)1 << (Iuimm5 - 1)) : -1);
+                    signed<32> b = (signed<32>)((Iuimm5) ? (((unsigned<32>)1 << (Iuimm5 - 1)) - 1) : 0);
+                    signed<32> value = ((signed)X[rs1] < a) ? a : (signed)X[rs1];
+                    X[rd] = (unsigned<32>)((value > b) ? b : value);
                 }
             }
         }
@@ -120,10 +119,9 @@ InstructionSet XCoreVAlu extends RISCVBase {
             behavior: {
                 if (rd != 0) {
                     signed<32> a = 0;
-                    signed<32> b = (Iuimm5) ? ((1 << (Iuimm5 - 1)) - 1) : 0;
-                    if ((signed)X[rs1] <= a) X[rd] = (unsigned<XLEN>)(a);
-                    else if ((signed)X[rs1] >= b) X[rd] = (unsigned<XLEN>)(b);
-                    else X[rd] = X[rs1];
+                    signed<32> b = (signed<32>)((Iuimm5) ? (((unsigned<32>)1 << (Iuimm5 - 1)) - 1) : 0);
+                    signed<32> value = ((signed)X[rs1] < a) ? a : (signed)X[rs1];
+                    X[rd] = (unsigned<32>)((value > b) ? b : value);
                 }
             }
         }
@@ -132,11 +130,11 @@ InstructionSet XCoreVAlu extends RISCVBase {
             assembly: {"cv.clipr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    signed<32> a = (signed<32>)(-(X[rs2][31: 0] + 1));
-                    signed<32> b = (signed<32>)(X[rs2][31: 0]);
-                    if ((signed)X[rs1] <= a) X[rd] = (unsigned<XLEN>)(a);
-                    else if ((signed)X[rs1] >= b) X[rd] = (unsigned<XLEN>)(b);
-                    else X[rd] = X[rs1];
+                    // CORE-V ignores the bound register sign bit.
+                    signed<32> b = (unsigned<31>)X[rs2][30:0];
+                    signed<32> a = ~b;
+                    signed<32> value = ((signed)X[rs1] < a) ? a : (signed)X[rs1];
+                    X[rd] = (unsigned<32>)((value > b) ? b : value);
                 }
             }
         }
@@ -146,10 +144,10 @@ InstructionSet XCoreVAlu extends RISCVBase {
             behavior: {
                 if (rd != 0) {
                     signed<32> a = 0;
-                    signed<32> b = (signed<32>)(X[rs2][31: 0]);
-                    if ((signed)X[rs1] <= a) X[rd] = (unsigned<XLEN>)(a);
-                    else if ((signed)X[rs1] >= b) X[rd] = (unsigned<XLEN>)(b);
-                    else X[rd] = X[rs1];
+                    // CORE-V ignores the bound register sign bit.
+                    signed<32> b = (unsigned<31>)X[rs2][30:0];
+                    signed<32> value = ((signed)X[rs1] < a) ? a : (signed)X[rs1];
+                    X[rd] = (unsigned<32>)((value > b) ? b : value);
                 }
             }
         }

@@ -654,10 +654,10 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sra.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][ 7: 0] = (unsigned<8>)(signed)X[rs1][ 7: 0] >> (((unsigned<8>)Imm6));
-                    X[rd][15: 8] = (unsigned<8>)(signed)X[rs1][15: 8] >> (((unsigned<8>)Imm6));
-                    X[rd][23:16] = (unsigned<8>)(signed)X[rs1][23:16] >> (((unsigned<8>)Imm6));
-                    X[rd][31:24] = (unsigned<8>)(signed)X[rs1][31:24] >> (((unsigned<8>)Imm6));
+                    X[rd][ 7: 0] = (unsigned<8>)((signed)X[rs1][ 7: 0] >> (((unsigned<8>)Imm6)));
+                    X[rd][15: 8] = (unsigned<8>)((signed)X[rs1][15: 8] >> (((unsigned<8>)Imm6)));
+                    X[rd][23:16] = (unsigned<8>)((signed)X[rs1][23:16] >> (((unsigned<8>)Imm6)));
+                    X[rd][31:24] = (unsigned<8>)((signed)X[rs1][31:24] >> (((unsigned<8>)Imm6)));
                 }
             }
         }
@@ -930,8 +930,8 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.abs.h", "{name(rd)}, {name(rs1)}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][15: 0] = (unsigned<16>)(((signed)X[rs1][15: 0] < 0) ? (unsigned<16>)(-X[rs1][15: 0]) : X[rs1][15: 0]);
-                    X[rd][31:16] = (unsigned<16>)(((signed)X[rs1][31:16] < 0) ? (unsigned<16>)(-X[rs1][31:16]) : X[rs1][31:16]);
+                    X[rd][15: 0] = (unsigned<16>)(((signed)X[rs1][15: 0] < 0) ? (-X[rs1][15: 0])[16-1:0] : X[rs1][15: 0]);
+                    X[rd][31:16] = (unsigned<16>)(((signed)X[rs1][31:16] < 0) ? (-X[rs1][31:16])[16-1:0] : X[rs1][31:16]);
                 }
             }
         }
@@ -940,70 +940,70 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.abs.b", "{name(rd)}, {name(rs1)}" };
             behavior: {
                 if (rd != 0) {
-                    X[rd][ 7: 0] = (unsigned<8>)(((signed)X[rs1][ 7: 0] < 0) ? (unsigned<8>)(-X[rs1][ 7: 0]) : X[rs1][ 7: 0]);
-                    X[rd][15: 8] = (unsigned<8>)(((signed)X[rs1][15: 8] < 0) ? (unsigned<8>)(-X[rs1][15: 8]) : X[rs1][15: 8]);
-                    X[rd][23:16] = (unsigned<8>)(((signed)X[rs1][23:16] < 0) ? (unsigned<8>)(-X[rs1][23:16]) : X[rs1][23:16]);
-                    X[rd][31:24] = (unsigned<8>)(((signed)X[rs1][31:24] < 0) ? (unsigned<8>)(-X[rs1][31:24]) : X[rs1][31:24]);
+                    X[rd][ 7: 0] = (unsigned<8>)(((signed)X[rs1][ 7: 0] < 0) ? (-X[rs1][ 7: 0])[8-1:0] : X[rs1][ 7: 0]);
+                    X[rd][15: 8] = (unsigned<8>)(((signed)X[rs1][15: 8] < 0) ? (-X[rs1][15: 8])[8-1:0] : X[rs1][15: 8]);
+                    X[rd][23:16] = (unsigned<8>)(((signed)X[rs1][23:16] < 0) ? (-X[rs1][23:16])[8-1:0] : X[rs1][23:16]);
+                    X[rd][31:24] = (unsigned<8>)(((signed)X[rs1][31:24] < 0) ? (-X[rs1][31:24])[8-1:0] : X[rs1][31:24]);
                 }
             }
         }
         CV_EXTRACT_H {
-            encoding: 5'b10111 :: 1'b0 :: Imm6[0:0] :: Imm6[5:1] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1111011;
+            encoding: 5'b10111 :: 1'b0 :: Imm6[0:0] :: 5'b00000 :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.extract.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    unsigned<8> lower = Imm6[0]*16;
-                    X[rd] = (unsigned<32>)((signed)X[rs1][lower+15 : lower ]);
+                    unsigned<5> base = (unsigned<5>)(Imm6[0] * 16);
+                    X[rd] = (unsigned<32>)((signed)X[rs1][base + 15 : base]);
                 }
             }
         }
         CV_EXTRACT_B {
-            encoding: 5'b10111 :: 1'b0 :: Imm6[0:0] :: Imm6[5:1] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1111011;
+            encoding: 5'b10111 :: 1'b0 :: Imm6[0:0] :: 4'b0000 :: Imm6[1:1] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.extract.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    unsigned<8> lower = Imm6[1:0]*8;
-                    X[rd] = (unsigned<32>)((signed)X[rs1][lower+7 :lower ]);
+                    unsigned<5> base = (unsigned<5>)(Imm6[1:0] * 8);
+                    X[rd] = (unsigned<32>)((signed)X[rs1][base + 7 : base]);
                 }
             }
         }
         CV_EXTRACTU_H {
-            encoding: 5'b10111 :: 1'b0 :: Imm6[0:0] :: Imm6[5:1] :: rs1[4:0] :: 3'b010 :: rd[4:0] :: 7'b1111011;
+            encoding: 5'b10111 :: 1'b0 :: Imm6[0:0] :: 5'b00000 :: rs1[4:0] :: 3'b010 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.extractu.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    unsigned<8> lower = Imm6[0]*16;
-                    X[rd] = (unsigned<32>)(X[rs1][lower + 15 : lower ]);
+                    unsigned<5> base = (unsigned<5>)(Imm6[0] * 16);
+                    X[rd] = (unsigned<32>)(X[rs1][base + 15 : base]);
                 }
             }
         }
         CV_EXTRACTU_B {
-            encoding: 5'b10111 :: 1'b0 :: Imm6[0:0] :: Imm6[5:1] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b1111011;
+            encoding: 5'b10111 :: 1'b0 :: Imm6[0:0] :: 4'b0000 :: Imm6[1:1] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.extractu.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    unsigned<8> lower = Imm6[1:0]*8;
-                    X[rd] = (unsigned<32>)(X[rs1][lower + 7 : lower ]);
+                    unsigned<5> base = (unsigned<5>)(Imm6[1:0] * 8);
+                    X[rd] = (unsigned<32>)(X[rs1][base + 7 : base]);
                 }
             }
         }
         CV_INSERT_H {
-            encoding: 5'b10111 :: 1'b0 :: Imm6[0:0] :: Imm6[5:1] :: rs1[4:0] :: 3'b100 :: rd[4:0] :: 7'b1111011;
+            encoding: 5'b10111 :: 1'b0 :: Imm6[0:0] :: 5'b00000 :: rs1[4:0] :: 3'b100 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.insert.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    unsigned<8> lower = Imm6[0]*16;
-                    X[rd][lower + 15 : lower ] = X[rs1][15: 0];
+                    unsigned<5> base = (unsigned<5>)(Imm6[0] * 16);
+                    X[rd][base + 15 : base] = X[rs1][15: 0];
                 }
             }
         }
         CV_INSERT_B {
-            encoding: 5'b10111 :: 1'b0 :: Imm6[0:0] :: Imm6[5:1] :: rs1[4:0] :: 3'b101 :: rd[4:0] :: 7'b1111011;
+            encoding: 5'b10111 :: 1'b0 :: Imm6[0:0] :: 4'b0000 :: Imm6[1:1] :: rs1[4:0] :: 3'b101 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.insert.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) {
-                    unsigned<8> lower = Imm6[1:0]*8;
-                    X[rd][lower + 7 : lower ] = X[rs1][ 7: 0];
+                    unsigned<5> base = (unsigned<5>)(Imm6[1:0] * 8);
+                    X[rd][base + 7 : base] = X[rs1][ 7: 0];
                 }
             }
         }
@@ -1192,7 +1192,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotup.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][15: 0] * (unsigned)X[rs2][15: 0]) +
                     ((unsigned)X[rs1][31:16] * (unsigned)X[rs2][31:16])));
             }
@@ -1202,7 +1202,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotup.sc.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][15: 0] * (unsigned)X[rs2][15:0]) +
                     ((unsigned)X[rs1][31:16] * (unsigned)X[rs2][15:0])));
             }
@@ -1212,7 +1212,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotup.sci.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][15: 0] * (unsigned)((unsigned<16>)((signed)Imm6))) +
                     ((unsigned)X[rs1][31:16] * (unsigned)((unsigned<16>)((signed)Imm6)))));
             }
@@ -1222,7 +1222,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotup.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][ 7: 0] * (unsigned)X[rs2][ 7: 0]) +
                     ((unsigned)X[rs1][15: 8] * (unsigned)X[rs2][15: 8]) +
                     ((unsigned)X[rs1][23:16] * (unsigned)X[rs2][23:16]) +
@@ -1234,7 +1234,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotup.sc.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][ 7: 0] * (unsigned)X[rs2][7:0]) +
                     ((unsigned)X[rs1][15: 8] * (unsigned)X[rs2][7:0]) +
                     ((unsigned)X[rs1][23:16] * (unsigned)X[rs2][7:0]) +
@@ -1246,7 +1246,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotup.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][ 7: 0] * (unsigned)((unsigned<8>)((signed)Imm6))) +
                     ((unsigned)X[rs1][15: 8] * (unsigned)((unsigned<8>)((signed)Imm6))) +
                     ((unsigned)X[rs1][23:16] * (unsigned)((unsigned<8>)((signed)Imm6))) +
@@ -1258,7 +1258,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotusp.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][15: 0] * (signed)X[rs2][15: 0]) +
                     ((unsigned)X[rs1][31:16] * (signed)X[rs2][31:16])));
             }
@@ -1268,7 +1268,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotusp.sc.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][15: 0] * (signed)X[rs2][15:0]) +
                     ((unsigned)X[rs1][31:16] * (signed)X[rs2][15:0])));
             }
@@ -1278,7 +1278,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotusp.sci.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][15: 0] * (signed)((unsigned<16>)((signed)Imm6))) +
                     ((unsigned)X[rs1][31:16] * (signed)((unsigned<16>)((signed)Imm6)))));
             }
@@ -1288,7 +1288,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotusp.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][ 7: 0] * (signed)X[rs2][ 7: 0]) +
                     ((unsigned)X[rs1][15: 8] * (signed)X[rs2][15: 8]) +
                     ((unsigned)X[rs1][23:16] * (signed)X[rs2][23:16]) +
@@ -1300,7 +1300,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotusp.sc.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][ 7: 0] * (signed)X[rs2][7:0]) +
                     ((unsigned)X[rs1][15: 8] * (signed)X[rs2][7:0]) +
                     ((unsigned)X[rs1][23:16] * (signed)X[rs2][7:0]) +
@@ -1312,7 +1312,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotusp.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((
-                    X[rd] + 
+                    X[rd] +
                     ((unsigned)X[rs1][ 7: 0] * (signed)((unsigned<8>)((signed)Imm6))) +
                     ((unsigned)X[rs1][15: 8] * (signed)((unsigned<8>)((signed)Imm6))) +
                     ((unsigned)X[rs1][23:16] * (signed)((unsigned<8>)((signed)Imm6))) +
@@ -1324,7 +1324,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotsp.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((signed)(
-                    X[rd] + 
+                    X[rd] +
                     ((signed)X[rs1][15: 0] * (signed)X[rs2][15: 0]) +
                     ((signed)X[rs1][31:16] * (signed)X[rs2][31:16])));
             }
@@ -1334,7 +1334,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotsp.sc.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((signed)(
-                    X[rd] + 
+                    X[rd] +
                     ((signed)X[rs1][15: 0] * (signed)X[rs2][15:0]) +
                     ((signed)X[rs1][31:16] * (signed)X[rs2][15:0])));
             }
@@ -1344,7 +1344,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotsp.sci.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((signed)(
-                    X[rd] + 
+                    X[rd] +
                     ((signed)X[rs1][15: 0] * (signed)((unsigned<16>)((signed)Imm6))) +
                     ((signed)X[rs1][31:16] * (signed)((unsigned<16>)((signed)Imm6)))));
             }
@@ -1354,7 +1354,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotsp.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((signed)(
-                    X[rd] + 
+                    X[rd] +
                     ((signed)X[rs1][ 7: 0] * (signed)X[rs2][ 7: 0]) +
                     ((signed)X[rs1][15: 8] * (signed)X[rs2][15: 8]) +
                     ((signed)X[rs1][23:16] * (signed)X[rs2][23:16]) +
@@ -1366,7 +1366,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotsp.sc.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((signed)(
-                    X[rd] + 
+                    X[rd] +
                     ((signed)X[rs1][ 7: 0] * (signed)X[rs2][7:0]) +
                     ((signed)X[rs1][15: 8] * (signed)X[rs2][7:0]) +
                     ((signed)X[rs1][23:16] * (signed)X[rs2][7:0]) +
@@ -1378,7 +1378,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             assembly: {"cv.sdotsp.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
                 if (rd != 0) X[rd] = (unsigned<32>)((signed)(
-                    X[rd] + 
+                    X[rd] +
                     ((signed)X[rs1][ 7: 0] * (signed)((unsigned<8>)((signed)Imm6))) +
                     ((signed)X[rs1][15: 8] * (signed)((unsigned<8>)((signed)Imm6))) +
                     ((signed)X[rs1][23:16] * (signed)((unsigned<8>)((signed)Imm6))) +
@@ -1389,11 +1389,13 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b11000 :: 1'b0 :: 1'b0 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.shuffle.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
+                unsigned<32> seal5_src2 = X[rs2];
                 if (rd != 0) {
-                    unsigned<16> lower = (X[rs2][15: 0][0]*16);
-                    unsigned<16> upper = (X[rs2][31:16][0]*16);
-                    X[rd][15: 0] = X[rs1][lower + 15 : lower ];
-                    X[rd][31:16] = X[rs1][upper + 15 : upper ];
+                    unsigned<5> base_lo = (unsigned<5>)(seal5_src2[ 0] * 16);
+                    unsigned<5> base_hi = (unsigned<5>)(seal5_src2[16] * 16);
+                    X[rd][15: 0] = seal5_src1[base_lo + 15 : base_lo];
+                    X[rd][31:16] = seal5_src1[base_hi + 15 : base_hi];
                 }
             }
         }
@@ -1401,11 +1403,12 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b11000 :: 1'b0 :: Imm6[0:0] :: Imm6[5:1] :: rs1[4:0] :: 3'b110 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.shuffle.sci.h", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
                 if (rd != 0) {
-                    unsigned<8> lower = (Imm6[0]*16);
-                    unsigned<8> upper = (Imm6[1]*16);
-                    X[rd][15: 0] = X[rs1][lower + 15 : lower ];
-                    X[rd][31:16] = X[rs1][upper + 15 : upper ];
+                    unsigned<5> base_lo = (unsigned<5>)(Imm6[ 0] * 16);
+                    unsigned<5> base_hi = (unsigned<5>)(Imm6[1] * 16);
+                    X[rd][15: 0] = seal5_src1[base_lo + 15 : base_lo];
+                    X[rd][31:16] = seal5_src1[base_hi + 15 : base_hi];
                 }
             }
         }
@@ -1413,15 +1416,17 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b11000 :: 1'b0 :: 1'b0 :: rs2[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.shuffle.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
+                unsigned<32> seal5_src2 = X[rs2];
                 if (rd != 0) {
-                    unsigned<8> lowest = (X[rs2][ 7: 0][1:0]*8);
-                    unsigned<8> lower = (X[rs2][15: 8][1:0]*8);
-                    unsigned<8> upper = (X[rs2][23:16][1:0]*8);
-                    unsigned<8> highest = (X[rs2][31:24][1:0]*8);
-                    X[rd][ 7: 0] = X[rs1][lowest + 7 : lowest ];
-                    X[rd][15: 8] = X[rs1][lower + 7 : lower ];
-                    X[rd][23:16] = X[rs1][upper + 7 : upper ];
-                    X[rd][31:24] = X[rs1][highest + 7 : highest ];
+                    unsigned<5> base0 = (unsigned<5>)(seal5_src2[ 1: 0] * 8);
+                    unsigned<5> base1 = (unsigned<5>)(seal5_src2[ 9: 8] * 8);
+                    unsigned<5> base2 = (unsigned<5>)(seal5_src2[17:16] * 8);
+                    unsigned<5> base3 = (unsigned<5>)(seal5_src2[25:24] * 8);
+                    X[rd][ 7: 0] = seal5_src1[base0 + 7 : base0];
+                    X[rd][15: 8] = seal5_src1[base1 + 7 : base1];
+                    X[rd][23:16] = seal5_src1[base2 + 7 : base2];
+                    X[rd][31:24] = seal5_src1[base3 + 7 : base3];
                 }
             }
         }
@@ -1429,14 +1434,15 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b11000 :: 1'b0 :: Imm6[0:0] :: Imm6[5:1] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.shuffleI0.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
                 if (rd != 0) {
-                    unsigned<8> lowest = Imm6[1:0]*8;
-                    unsigned<8> middle = Imm6[3:2]*8;
-                    unsigned<8> upper = Imm6[5:4]*8;
-                    X[rd][ 7: 0] = X[rs1][lowest + 7 : lowest ];
-                    X[rd][15: 8] = X[rs1][middle + 7 : middle ];
-                    X[rd][23:16] = X[rs1][upper + 7 : upper ];
-                    X[rd][31:24] = X[rs1][ 7: 0];
+                    unsigned<5> base0 = (unsigned<5>)(Imm6[1:0] * 8);
+                    unsigned<5> base1 = (unsigned<5>)(Imm6[3:2] * 8);
+                    unsigned<5> base2 = (unsigned<5>)(Imm6[5:4] * 8);
+                    X[rd][ 7: 0] = seal5_src1[base0 + 7 : base0];
+                    X[rd][15: 8] = seal5_src1[base1 + 7 : base1];
+                    X[rd][23:16] = seal5_src1[base2 + 7 : base2];
+                    X[rd][31:24] = seal5_src1[ 7: 0];
                 }
             }
         }
@@ -1444,14 +1450,15 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b11001 :: 1'b0 :: Imm6[0:0] :: Imm6[5:1] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.shuffleI1.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
                 if (rd != 0) {
-                    unsigned<8> lowest = Imm6[1:0]*8;
-                    unsigned<8> middle = Imm6[3:2]*8;
-                    unsigned<8> upper = Imm6[5:4]*8;
-                    X[rd][ 7: 0] = X[rs1][lowest + 7 : lowest ];
-                    X[rd][15: 8] = X[rs1][middle + 7 : middle ];
-                    X[rd][23:16] = X[rs1][upper + 7 : upper ];
-                    X[rd][31:24] = X[rs1][15: 8];
+                    unsigned<5> base0 = (unsigned<5>)(Imm6[1:0] * 8);
+                    unsigned<5> base1 = (unsigned<5>)(Imm6[3:2] * 8);
+                    unsigned<5> base2 = (unsigned<5>)(Imm6[5:4] * 8);
+                    X[rd][ 7: 0] = seal5_src1[base0 + 7 : base0];
+                    X[rd][15: 8] = seal5_src1[base1 + 7 : base1];
+                    X[rd][23:16] = seal5_src1[base2 + 7 : base2];
+                    X[rd][31:24] = seal5_src1[15: 8];
                 }
             }
         }
@@ -1459,14 +1466,15 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b11010 :: 1'b0 :: Imm6[0:0] :: Imm6[5:1] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.shuffleI2.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
                 if (rd != 0) {
-                    unsigned<8> lowest = Imm6[1:0]*8;
-                    unsigned<8> middle = Imm6[3:2]*8;
-                    unsigned<8> upper = Imm6[5:4]*8;
-                    X[rd][ 7: 0] = X[rs1][lowest + 7 : lowest ];
-                    X[rd][15: 8] = X[rs1][middle + 7 : middle ];
-                    X[rd][23:16] = X[rs1][upper + 7 : upper ];
-                    X[rd][31:24] = X[rs1][23:16];
+                    unsigned<5> base0 = (unsigned<5>)(Imm6[1:0] * 8);
+                    unsigned<5> base1 = (unsigned<5>)(Imm6[3:2] * 8);
+                    unsigned<5> base2 = (unsigned<5>)(Imm6[5:4] * 8);
+                    X[rd][ 7: 0] = seal5_src1[base0 + 7 : base0];
+                    X[rd][15: 8] = seal5_src1[base1 + 7 : base1];
+                    X[rd][23:16] = seal5_src1[base2 + 7 : base2];
+                    X[rd][31:24] = seal5_src1[23:16];
                 }
             }
         }
@@ -1474,14 +1482,15 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b11011 :: 1'b0 :: Imm6[0:0] :: Imm6[5:1] :: rs1[4:0] :: 3'b111 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.shuffleI3.sci.b", "{name(rd)}, {name(rs1)}, {Imm6}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
                 if (rd != 0) {
-                    unsigned<8> lowest = Imm6[1:0]*8;
-                    unsigned<8> middle = Imm6[3:2]*8;
-                    unsigned<8> upper = Imm6[5:4]*8;
-                    X[rd][ 7: 0] = X[rs1][lowest + 7 : lowest ];
-                    X[rd][15: 8] = X[rs1][middle + 7 : middle ];
-                    X[rd][23:16] = X[rs1][upper + 7 : upper ];
-                    X[rd][31:24] = X[rs1][31:24];
+                    unsigned<5> base0 = (unsigned<5>)(Imm6[1:0] * 8);
+                    unsigned<5> base1 = (unsigned<5>)(Imm6[3:2] * 8);
+                    unsigned<5> base2 = (unsigned<5>)(Imm6[5:4] * 8);
+                    X[rd][ 7: 0] = seal5_src1[base0 + 7 : base0];
+                    X[rd][15: 8] = seal5_src1[base1 + 7 : base1];
+                    X[rd][23:16] = seal5_src1[base2 + 7 : base2];
+                    X[rd][31:24] = seal5_src1[31:24];
                 }
             }
         }
@@ -1489,13 +1498,16 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b11100 :: 1'b0 :: 1'b0 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.shuffle2.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
+                unsigned<32> seal5_src2 = X[rs2];
+                unsigned<32> seal5_old_rd = X[rd];
                 if (rd != 0) {
-                    unsigned<5> lower_selector = (unsigned<5>)(X[rs2][15: 0][1] ? rs1 : rd);
-                    unsigned<5> upper_selector = (unsigned<5>)(X[rs2][31:16][1] ? rs1 : rd);
-                    unsigned<8> lower = (X[rs2][15: 0][0]*16);
-                    unsigned<8> upper = (X[rs2][31:16][0]*16);
-                    X[rd][15: 0] = X[lower_selector][lower + 15 : lower ];
-                    X[rd][31:16] = X[upper_selector][upper + 15 : upper ];
+                    unsigned<5> select_lo = seal5_src2[ 1];
+                    unsigned<5> select_hi = seal5_src2[17];
+                    unsigned<5> base_lo = (unsigned<5>)(seal5_src2[ 0] * 16);
+                    unsigned<5> base_hi = (unsigned<5>)(seal5_src2[16] * 16);
+                    X[rd][15: 0] = (select_lo ? seal5_src1 : seal5_old_rd)[base_lo + 15 : base_lo];
+                    X[rd][31:16] = (select_hi ? seal5_src1 : seal5_old_rd)[base_hi + 15 : base_hi];
                 }
             }
         }
@@ -1503,19 +1515,22 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b11100 :: 1'b0 :: 1'b0 :: rs2[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.shuffle2.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
+                unsigned<32> seal5_src2 = X[rs2];
+                unsigned<32> seal5_old_rd = X[rd];
                 if (rd != 0) {
-                    unsigned<5> lowest_selector = (unsigned<5>)(X[rs2][ 7: 0][2] ? rs1 : rd);
-                    unsigned<5> lower_selector = (unsigned<5>)(X[rs2][15: 8][2] ? rs1 : rd);
-                    unsigned<5> upper_selector = (unsigned<5>)(X[rs2][23:16][2] ? rs1 : rd);
-                    unsigned<5> highest_selector = (unsigned<5>)(X[rs2][31:24][2] ? rs1 : rd);
-                    unsigned<8> lowest = (X[rs2][ 7: 0][1:0]*8);
-                    unsigned<8> lower = (X[rs2][15: 8][1:0]*8);
-                    unsigned<8> upper = (X[rs2][23:16][1:0]*8);
-                    unsigned<8> highest = (X[rs2][31:24][1:0]*8);
-                    X[rd][ 7: 0] = X[lowest_selector][lowest + 7 : lowest ];
-                    X[rd][15: 8] = X[lower_selector][lower + 7 : lower ];
-                    X[rd][23:16] = X[upper_selector][upper + 7 : upper ];
-                    X[rd][31:24] = X[highest_selector][highest + 7 : highest ];
+                    unsigned<5> select0 = seal5_src2[ 2];
+                    unsigned<5> select1 = seal5_src2[10];
+                    unsigned<5> select2 = seal5_src2[18];
+                    unsigned<5> select3 = seal5_src2[26];
+                    unsigned<5> base0 = (unsigned<5>)(seal5_src2[ 1: 0] * 8);
+                    unsigned<5> base1 = (unsigned<5>)(seal5_src2[ 9: 8] * 8);
+                    unsigned<5> base2 = (unsigned<5>)(seal5_src2[17:16] * 8);
+                    unsigned<5> base3 = (unsigned<5>)(seal5_src2[25:24] * 8);
+                    X[rd][ 7: 0] = (select0 ? seal5_src1 : seal5_old_rd)[base0 + 7 : base0];
+                    X[rd][15: 8] = (select1 ? seal5_src1 : seal5_old_rd)[base1 + 7 : base1];
+                    X[rd][23:16] = (select2 ? seal5_src1 : seal5_old_rd)[base2 + 7 : base2];
+                    X[rd][31:24] = (select3 ? seal5_src1 : seal5_old_rd)[base3 + 7 : base3];
                 }
             }
         }
@@ -1523,9 +1538,11 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b11110 :: 1'b0 :: 1'b0 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.pack", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
+                unsigned<32> seal5_src2 = X[rs2];
                 if (rd != 0) {
-                    X[rd][31:16] = X[rs1][15: 0];
-                    X[rd][15: 0] = X[rs2][15: 0];
+                    X[rd][31:16] = seal5_src1[15: 0];
+                    X[rd][15: 0] = seal5_src2[15: 0];
                 }
             }
         }
@@ -1533,9 +1550,11 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b11110 :: 1'b0 :: 1'b1 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.pack.h", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
+                unsigned<32> seal5_src2 = X[rs2];
                 if (rd != 0) {
-                    X[rd][31:16] = X[rs1][31:16];
-                    X[rd][15: 0] = X[rs2][31:16];
+                    X[rd][31:16] = seal5_src1[31:16];
+                    X[rd][15: 0] = seal5_src2[31:16];
                 }
             }
         }
@@ -1543,9 +1562,13 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b11111 :: 1'b0 :: 1'b1 :: rs2[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.packhi.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
+                unsigned<32> seal5_src2 = X[rs2];
+                unsigned<32> seal5_old_rd = X[rd];
                 if (rd != 0) {
-                    X[rd][31:24] = X[rs1][ 7: 0];
-                    X[rd][23:16] = X[rs2][ 7: 0];
+                    X[rd][31:24] = seal5_src1[ 7: 0];
+                    X[rd][23:16] = seal5_src2[ 7: 0];
+                    X[rd][15:0] = seal5_old_rd[15:0];  // explicit copy to detect inout properly
                 }
             }
         }
@@ -1553,9 +1576,13 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b11111 :: 1'b0 :: 1'b0 :: rs2[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.packlo.b", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
+                unsigned<32> seal5_src2 = X[rs2];
+                unsigned<32> seal5_old_rd = X[rd];
                 if (rd != 0) {
-                    X[rd][15: 8] = X[rs1][ 7: 0];
-                    X[rd][ 7: 0] = X[rs2][ 7: 0];
+                    X[rd][31:16] = seal5_old_rd[31:16];  // explicit copy to detect inout properly
+                    X[rd][15: 8] = seal5_src1[ 7: 0];
+                    X[rd][ 7: 0] = seal5_src2[ 7: 0];
                 }
             }
         }
@@ -2307,8 +2334,10 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b01100 :: 1'b1 :: 1'b0 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.subrotmj", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
+                unsigned<32> seal5_src2 = X[rs2];
                 if (rd != 0) {
-                    X[rd][31:16] = (X[rs2][15: 0] - X[rs1][31:16])[15:0];
+                    X[rd][31:16] = (seal5_src2[15: 0] - seal5_src1[31:16])[15:0];
                 }
             }
         }
@@ -2316,8 +2345,10 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b01100 :: 1'b1 :: 1'b0 :: rs2[4:0] :: rs1[4:0] :: 3'b010 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.subrotmj.div2", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
+                unsigned<32> seal5_src2 = X[rs2];
                 if (rd != 0) {
-                    X[rd][31:16] = ((signed)((X[rs2][15: 0] - X[rs1][31:16])[15:0]) >> 1)[15:0];
+                    X[rd][31:16] = ((signed)((seal5_src2[15: 0] - seal5_src1[31:16])[15:0]) >> 1)[15:0];
                 }
             }
         }
@@ -2325,8 +2356,10 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b01100 :: 1'b1 :: 1'b0 :: rs2[4:0] :: rs1[4:0] :: 3'b100 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.subrotmj.div4", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
+                unsigned<32> seal5_src2 = X[rs2];
                 if (rd != 0) {
-                    X[rd][31:16] = ((signed)((X[rs2][15: 0] - X[rs1][31:16])[15:0]) >> 2)[15:0];
+                    X[rd][31:16] = ((signed)((seal5_src2[15: 0] - seal5_src1[31:16])[15:0]) >> 2)[15:0];
                 }
             }
         }
@@ -2334,8 +2367,10 @@ InstructionSet XCoreVSimd extends RISCVBase {
             encoding: 5'b01100 :: 1'b1 :: 1'b0 :: rs2[4:0] :: rs1[4:0] :: 3'b110 :: rd[4:0] :: 7'b1111011;
             assembly: {"cv.subrotmj.div8", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                unsigned<32> seal5_src1 = X[rs1];
+                unsigned<32> seal5_src2 = X[rs2];
                 if (rd != 0) {
-                    X[rd][31:16] = ((signed)((X[rs2][15: 0] - X[rs1][31:16])[15:0]) >> 3)[15:0];
+                    X[rd][31:16] = ((signed)((seal5_src2[15: 0] - seal5_src1[31:16])[15:0]) >> 3)[15:0];
                 }
             }
         }
