@@ -32,10 +32,17 @@ in SEAL5's `examples/corev/review/README.md`. The checked model comprised the
 complete SIMD, bit manipulation and immediate-branch instruction groups plus
 the four changed clipping behaviors, with the existing runtime's base ISA,
 CSR and semihosting descriptions. Strict source/behavior validation and native
-generation passed for this scope. The remaining ALU/MAC behaviors on this branch
-still have pre-existing strict-validation failures; the separate LLVM
-restoration integration addresses those. CV_CLB remains disabled.
+generation passed for this scope. After merging main at
+`26138c3c87a5bdd3d96156afe2a4ccbb6274f8fe`, the complete merged XCoreV
+instruction groups also pass strict source/behavior validation with the tested
+runtime adapter. Main supplies the additional ALU/MAC conversion fixes.
+The adapter includes the explicit-width JALR mask and reservation-address
+initializer corrections documented by the SEAL5 review; this is not a claim
+that every unmodified runtime description passes that validation.
+CV_CLB remains disabled.
 
 The PR #2 changes preserve its imports, encodings and assembly declarations;
-the LLVM restoration branch is not merged here. Its wider corrections and the
-existing conflict with main need to be handled when integrating those branches.
+the LLVM restoration branch is not merged here. Its wider arithmetic and
+encoding corrections remain separate. Conflicts with the main head above
+are resolved, retaining the signed clipping comparisons, SIMD input snapshots
+and corrected halfword shuffle selector.

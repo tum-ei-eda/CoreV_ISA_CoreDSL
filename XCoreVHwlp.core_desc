@@ -1,4 +1,4 @@
-import "../rv_base/RV32I.core_desc"
+import "RVI.core_desc"
 
 InstructionSet XCoreVHwlp extends RV32I {
     architectural_state {

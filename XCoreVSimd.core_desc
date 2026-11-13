@@ -2326,7 +2326,7 @@ InstructionSet XCoreVSimd extends RISCVBase {
             behavior: {
                 if (rd != 0) {
                     X[rd][15: 0] = X[rs1][15: 0];
-                    X[rd][31:16] = (-X[rs1][31:16])[15:0];
+                    X[rd][31:16] = (unsigned<16>)(-X[rs1][31:16]);
                 }
             }
         }
