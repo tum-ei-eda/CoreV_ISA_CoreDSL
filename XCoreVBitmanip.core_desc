@@ -1,17 +1,4 @@
-// import "../rv_base/RISCVBase.core_desc"
-import "RVI.core_desc"
-
-// InstructionSet XCoreVBitmanip extends RISCVBase {
 InstructionSet XCoreVBitmanip extends RV32I {
-    functions {
-        // Rotate counts use their low five bits; both shifts stay in 0..31.
-        unsigned<32> rotl32(unsigned<32> x, unsigned<32> n) [[inline]] {
-            return (x << (n & 31)) | (x >> ((32 - n) & 31));
-        }
-        unsigned<32> rotr32(unsigned<32> x, unsigned<32> n) [[inline]] {
-            return (x >> (n & 31)) | (x << ((32 - n) & 31));
-        }
-    }
     instructions {
         // SOURCE FILE: instr_srcs/XCoreVALU_BitmanipI.txt
         CV_EXTRACT {
@@ -19,37 +6,85 @@ InstructionSet XCoreVBitmanip extends RV32I {
             assembly: {"cv.extract", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: add assert
-                    X[rd] = (signed<32>)((signed)((X[rs1] >> Iuimm5) & (((unsigned<32>)2 << Luimm5) - 1)));
+                    X[rd] = (unsigned<XLEN>)((signed<32>)(((X[rs1] >> Iuimm5) & ((2 << Luimm5) - 1)) << (31 - Luimm5)) >> (31 - Luimm5));
                 }
             }
         }
+        // TODO: switch impl?
+        // CV_EXTRACT {
+        //     encoding: 2'b00 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
+        //     assembly: {"cv.extract", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
+        //     behavior: {
+        //         if (rd != 0) {
+        //             unsigned<6> width = Luimm5 + 1;
+        //             unsigned<32> value = X[rs1] >> Iuimm5;
+        //             unsigned<32> mask = 0;
+        //             unsigned<6> i = 0;
+        //             if (width > (32 - Iuimm5)) {
+        //                 width = 32 - Iuimm5;
+        //             }
+        //             while (i < width) {
+        //                 mask = mask | (1 << i);
+        //                 i = i + 1;
+        //             }
+        //             value = value & mask;
+        //             if (((value >> (width - 1)) & 1) != 0) {
+        //                 value = value | ~mask;
+        //             }
+        //             X[rd] = value;
+        //         }
+        //     }
+        // }
         CV_EXTRACTU {
             encoding: 2'b01 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.extractu", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: add assert
-                    X[rd] = (unsigned<32>)((unsigned)((X[rs1] >> Iuimm5) & (((unsigned<32>)2 << Luimm5) - 1)));
+                    X[rd] = (unsigned)((X[rs1] >> Iuimm5) & ((2 << Luimm5) - 1));
                 }
             }
         }
+        // TODO: switch impl?
+        // CV_EXTRACTU {
+        //     encoding: 2'b01 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
+        //     assembly: {"cv.extractu", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
+        //     behavior: {
+        //         if (rd != 0) {
+        //             unsigned<6> width = Luimm5 + 1;
+        //             unsigned<32> mask = 0;
+        //             unsigned<6> i = 0;
+        //             if (width > (32 - Iuimm5)) {
+        //                 width = 32 - Iuimm5;
+        //             }
+        //             while (i < width) {
+        //                 mask = mask | (1 << i);
+        //                 i = i + 1;
+        //             }
+        //             X[rd] = (X[rs1] >> Iuimm5) & mask;
+        //         }
+        //     }
+        // }
         CV_INSERT {
             encoding: 2'b10 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.insert", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
             behavior: {
+                // Warning: UNTESTED
                 if (rd != 0) {
-                    unsigned<32> rs1_val = X[rs1];
-                    unsigned<5> base = Iuimm5;
-                    unsigned<5> offset = Luimm5;
-                    unsigned<5> temp = base + offset > 31 ? base + offset : 31;
-                    unsigned<5> num = offset - temp - 31;
-                    unsigned<5> offset2 = base + offset < 32 ? offset : 31 - base;
-                    unsigned<32> mask = (((unsigned<32>)1<<(offset)) - 1) << base;
-                    unsigned<32> mask2 = (((unsigned<32>)1<<(num)) - 1);
-                    unsigned<32> temp2 = (rs1_val & mask2) << base;
-                    unsigned<32> rd_val = (rd_val & ~mask) | temp2;
-                    X[rd] = rd_val;
+                    unsigned<32> mask = 0;
+                    unsigned<6> i = 0;
+                    unsigned<6> width = Luimm5 + 1;
+
+                    if (width > (32 - Iuimm5)) {
+                        width = (unsigned<6>)(32 - Iuimm5);
+                    }
+
+                    while (i < width) {
+                        mask = mask | (1 << (Iuimm5 + i));
+                        i = (unsigned<6>)(i + 1);
+                    }
+
+                    X[rd] = (X[rd] & ~mask) |
+                            ((X[rs1] << Iuimm5) & mask);
                 }
             }
         }
@@ -57,14 +92,22 @@ InstructionSet XCoreVBitmanip extends RV32I {
             encoding: 2'b00 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.bclr", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
             behavior: {
+                // Warning: UNTESTED
                 if (rd != 0) {
-                    unsigned<32> rs1_val = X[rs1];
-                    unsigned<5> base = Iuimm5;
-                    unsigned<5> offset = Luimm5;
-                    unsigned<5> offset2 = base + offset < 32 ? offset : 31 - base;
-                    unsigned<32> mask = (((unsigned<32>)1<<(offset)) - 1) << base;
-                    unsigned<32> rd_val = rs1_val & ~mask;
-                    X[rd] = rd_val;
+                    unsigned<32> mask = 0;
+                    unsigned<6> i = 0;
+                    unsigned<6> width = Luimm5 + 1;
+
+                    if (width > (32 - Iuimm5)) {
+                        width = (unsigned<6>)(32 - Iuimm5);
+                    }
+
+                    while (i < width) {
+                        mask = mask | (1 << (Iuimm5 + i));
+                        i = (unsigned<6>)(i + 1);
+                    }
+
+                    X[rd] = X[rs1] & ~mask;
                 }
             }
         }
@@ -72,39 +115,74 @@ InstructionSet XCoreVBitmanip extends RV32I {
             encoding: 2'b01 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
             assembly: {"cv.bset", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
             behavior: {
+                // Warning: UNTESTED
                 if (rd != 0) {
-                    unsigned<32> rs1_val = X[rs1];
-                    unsigned<5> base = Iuimm5;
-                    unsigned<5> offset = Luimm5;
-                    unsigned<5> offset2 = base + offset < 32 ? offset : 31 - base;
-                    unsigned<32> mask = (((unsigned<32>)1<<(offset)) - 1) << base;
-                    unsigned<32> rd_val = rs1_val | mask;
-                    X[rd] = rd_val;
+                    unsigned<32> mask = 0;
+                    unsigned<6> i = 0;
+                    unsigned<6> width = Luimm5 + 1;
+
+                    if (width > (32 - Iuimm5)) {
+                        width = (unsigned<6>)(32 - Iuimm5);
+                    }
+
+                    while (i < width) {
+                        mask = mask | (1 << (Iuimm5 + i));
+                        i = (unsigned<6>)(i + 1);
+                    }
+
+                    X[rd] = X[rs1] | mask;
                 }
             }
         }
         CV_BITREV {
-            encoding: 2'b11 :: Luimm5[4:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
-            assembly: {"cv.bitrev", "{name(rd)}, {name(rs1)}, {Luimm5}, {Iuimm5}" };
+            // Bits 29:27 must be zero; only bits 26:25 encode Is3.
+            encoding: 2'b11 :: 3'b000 :: Luimm2[1:0] :: Iuimm5[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b1011011;
+            assembly: {"cv.bitrev", "{name(rd)}, {name(rs1)}, {Luimm2}, {Iuimm5}" };
             behavior: {
+                // Warning: UNTESTED
                 if (rd != 0) {
-                    // This is NOT: X[rd] = llvm.bitreverse.i32(X[rs1])
-                    unsigned<32> rs1_val = X[rs1];
-                    unsigned<32> shifted = rs1_val << Iuimm5;
-                    if (Luimm5 == 0 || Luimm5 == 3) {  // radix-2
-                        // TODO: for loop instead?
-                        // TODO: would shifted[0:31] work?
-                        unsigned<32> rd_val = shifted[0] :: shifted[1] :: shifted[2] :: shifted[3] :: shifted[4] :: shifted[5] :: shifted[6] :: shifted[7] :: shifted[8] :: shifted[9] :: shifted[10] :: shifted[11] :: shifted[12] :: shifted[13] :: shifted[14] :: shifted[15] :: shifted[16] :: shifted[17] :: shifted[18] :: shifted[19] :: shifted[20] :: shifted[21] :: shifted[22] :: shifted[23] :: shifted[24] :: shifted[25] :: shifted[26] :: shifted[27] :: shifted[28] :: shifted[92] :: shifted[30] :: shifted[31];
-                        X[rd] = rd_val;
-                    } else if (Luimm5 == 1) {  // radix-4
-                        unsigned<32> rd_val = shifted[1:0] :: shifted[3:2] :: shifted[5:4] :: shifted[7:6] :: shifted[9:8] :: shifted[11:10] :: shifted[13:12] :: shifted[15:14] :: shifted[17:16] :: shifted[19:18] :: shifted[21:20] :: shifted[23:22] :: shifted[25:24] :: shifted[27:26] :: shifted[29:28] :: shifted[31:30];
-                        X[rd] = rd_val;
-                    } else if (Luimm5 == 2) {  // radix-8
-                        unsigned<32> rd_val = shifted[3:0] :: shifted[7:4] :: shifted[11:8] :: shifted[15:12] :: shifted[19:16] :: shifted[23:20] :: shifted[27:24] :: shifted[31:28];
-                        X[rd] = rd_val;
-                    } else {
-                        raise(0,2);
+                    unsigned<32> source = X[rs1] << Iuimm5;
+                    unsigned<32> result = 0;
+
+                    unsigned<3> groupWidth = 1;
+                    unsigned<3> firstWidth = 1;
+                    unsigned<6> sourceBase = 0;
+                    unsigned<6> destinationBase = 0;
+                    unsigned<6> chunkWidth = 0;
+                    unsigned<6> i = 0;
+
+                    // Is3 == 3 behaves like Is3 == 0.
+                    if (Luimm2 == 1) {
+                        groupWidth = 2;
+                    } else if (Luimm2 == 2) {
+                        groupWidth = 3;
                     }
+
+                    firstWidth = 32 % groupWidth;
+                    if (firstWidth == 0) {
+                        firstWidth = groupWidth;
+                    }
+
+                    chunkWidth = firstWidth;
+
+                    while (sourceBase < 32) {
+                        destinationBase = (unsigned<6>)(32 - sourceBase - chunkWidth);
+                        i = 0;
+
+                        // Preserve the bit order within each group.
+                        while (i < chunkWidth) {
+                            if (((source >> (sourceBase + i)) & 1) != 0) {
+                                result = result |
+                                         (1 << (destinationBase + i));
+                            }
+                            i = (unsigned<6>)(i + 1);
+                        }
+
+                        sourceBase = (unsigned<6>)(sourceBase + chunkWidth);
+                        chunkWidth = groupWidth;
+                    }
+
+                    X[rd] = result;
                 }
             }
         }
@@ -114,37 +192,88 @@ InstructionSet XCoreVBitmanip extends RV32I {
             assembly: {"cv.extractr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: add assert
-                    X[rd] = (signed<32>)((signed)((X[rs1] >> X[rs2][4:0]) & (((unsigned<32>)2 << X[rs2][9:5]) - 1)));
+                    X[rd] = (unsigned<XLEN>)((signed<32>)(((X[rs1] >> X[rs2][31: 0][4:0]) & ((2 << X[rs2][31: 0][9:5]) - 1)) << (31 - X[rs2][31: 0][9:5])) >> (31 - X[rs2][31: 0][9:5]));
                 }
             }
         }
+        // TODO: switch impl?
+        // CV_EXTRACTR {
+        //     encoding: 7'b0011000 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+        //     assembly: {"cv.extractr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
+        //     behavior: {
+        //         if (rd != 0) {
+        //             unsigned<5> offset = X[rs2][4:0];
+        //             unsigned<6> width = X[rs2][9:5] + 1;
+        //             unsigned<32> value = X[rs1] >> offset;
+        //             unsigned<32> mask = 0;
+        //             unsigned<6> i = 0;
+        //             if (width > (32 - offset)) {
+        //                 width = 32 - offset;
+        //             }
+        //             while (i < width) {
+        //                 mask = mask | (1 << i);
+        //                 i = i + 1;
+        //             }
+        //             value = value & mask;
+        //             if (((value >> (width - 1)) & 1) != 0) {
+        //                 value = value | ~mask;
+        //             }
+        //             X[rd] = value;
+        //         }
+        //     }
+        // }
         CV_EXTRACTUR {
             encoding: 7'b0011001 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
             assembly: {"cv.extractur", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
                 if (rd != 0) {
-                    // TODO: add assert
-                    X[rd] = (unsigned<32>)((unsigned)((X[rs1] >> X[rs2][4:0]) & (((unsigned<32>)2 << X[rs2][9:5]) - 1)));
+                    X[rd] = (unsigned)((X[rs1] >> X[rs2][31: 0][4:0]) & ((2 << X[rs2][31: 0][9:5]) - 1));
                 }
             }
         }
+        // TODO: switch impl?
+        // CV_EXTRACTUR {
+        //     encoding: 7'b0011001 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+        //     assembly: {"cv.extractur", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
+        //     behavior: {
+        //         if (rd != 0) {
+        //             unsigned<5> offset = X[rs2][4:0];
+        //             unsigned<6> width = X[rs2][9:5] + 1;
+        //             unsigned<32> mask = 0;
+        //             unsigned<6> i = 0;
+        //             if (width > (32 - offset)) {
+        //                 width = 32 - offset;
+        //             }
+        //             while (i < width) {
+        //                 mask = mask | (1 << i);
+        //                 i = i + 1;
+        //             }
+        //             X[rd] = (X[rs1] >> offset) & mask;
+        //         }
+        //     }
+        // }
         CV_INSERTR {
             encoding: 7'b0011010 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
             assembly: {"cv.insertr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                // Warning: UNTESTED
                 if (rd != 0) {
-                    unsigned<32> rs1_val = X[rs1];
-                    unsigned<5> base = X[rs2][4:0];
-                    unsigned<5> offset = X[rs2][9:5];
-                    unsigned<5> temp = base + offset > 31 ? base + offset : 31;
-                    unsigned<5> num = offset - temp - 31;
-                    unsigned<5> offset2 = base + offset < 32 ? offset : 31 - base;
-                    unsigned<32> mask = (((unsigned<32>)1<<(offset)) - 1) << base;
-                    unsigned<32> mask2 = (((unsigned<32>)1<<(num)) - 1);
-                    unsigned<32> temp2 = (rs1_val & mask2) << base;
-                    unsigned<32> rd_val = (rd_val & ~mask) | temp2;
-                    X[rd]= rd_val;
+                    unsigned<5> offset = X[rs2][4:0];
+                    unsigned<6> width = X[rs2][9:5] + 1;
+                    unsigned<32> mask = 0;
+                    unsigned<6> i = 0;
+
+                    if (width > (32 - offset)) {
+                        width = (unsigned<6>)(32 - offset);
+                    }
+
+                    while (i < width) {
+                        mask = mask | (1 << (offset + i));
+                        i = (unsigned<6>)(i + 1);
+                    }
+
+                    X[rd] = (X[rd] & ~mask) |
+                            ((X[rs1] << offset) & mask);
                 }
             }
         }
@@ -152,14 +281,23 @@ InstructionSet XCoreVBitmanip extends RV32I {
             encoding: 7'b0011100 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
             assembly: {"cv.bclrr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                // Warning: UNTESTED
                 if (rd != 0) {
-                    unsigned<32> rs1_val = X[rs1];
-                    unsigned<5> base = X[rs2][4:0];
-                    unsigned<5> offset = X[rs2][9:5];
-                    unsigned<5> offset2 = base + offset < 32 ? offset : 31 - base;
-                    unsigned<32> mask = (((unsigned<32>)1<<(offset)) - 1) << base;
-                    unsigned<32> rd_val = rs1_val & ~mask;
-                    X[rd] = rd_val;
+                    unsigned<5> offset = X[rs2][4:0];
+                    unsigned<6> width = X[rs2][9:5] + 1;
+                    unsigned<32> mask = 0;
+                    unsigned<6> i = 0;
+
+                    if (width > (32 - offset)) {
+                        width = (unsigned<6>)(32 - offset);
+                    }
+
+                    while (i < width) {
+                        mask = mask | (1 << (offset + i));
+                        i = (unsigned<6>)(i + 1);
+                    }
+
+                    X[rd] = X[rs1] & ~mask;
                 }
             }
         }
@@ -167,40 +305,60 @@ InstructionSet XCoreVBitmanip extends RV32I {
             encoding: 7'b0011101 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
             assembly: {"cv.bsetr", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
             behavior: {
+                // Warning: UNTESTED
                 if (rd != 0) {
-                    unsigned<32> rs1_val = X[rs1];
-                    unsigned<5> base = X[rs2][4:0];
-                    unsigned<5> offset = X[rs2][9:5];
-                    unsigned<5> offset2 = base + offset < 32 ? offset : 31 - base;
-                    unsigned<32> mask = (((unsigned<32>)1<<(offset)) - 1) << base;
-                    unsigned<32> rd_val = rs1_val | mask;
-                    X[rd] = rd_val;
+                    unsigned<5> offset = X[rs2][4:0];
+                    unsigned<6> width = X[rs2][9:5] + 1;
+                    unsigned<32> mask = 0;
+                    unsigned<6> i = 0;
+
+                    if (width > (32 - offset)) {
+                        width = (unsigned<6>)(32 - offset);
+                    }
+
+                    while (i < width) {
+                        mask = mask | (1 << (offset + i));
+                        i = (unsigned<6>)(i + 1);
+                    }
+
+                    X[rd] = X[rs1] | mask;
                 }
             }
         }
         CV_ROR {
             encoding: 7'b0100000 :: rs2[4:0] :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
             assembly: {"cv.ror", "{name(rd)}, {name(rs1)}, {name(rs2)}" };
-            behavior: if (rd != 0) X[rd] = rotr32(X[rs1], X[rs2]);
+            behavior: {
+                if (rd != 0) {
+                    unsigned<5> shift = X[rs2][4:0];
+
+                    if (shift == 0) {
+                        X[rd] = X[rs1];
+                    } else {
+                        X[rd] = (X[rs1] >> shift) |
+                                (X[rs1] << (32 - shift));
+                    }
+                }
+            }
         }
         CV_FF1 {
             encoding: 7'b0100001 :: 5'b00000 :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
             assembly: {"cv.ff1", "{name(rd)}, {name(rs1)}" };
             behavior: {
+                // Warning: UNTESTED
                 if (rd != 0) {
-                    if (X[rs1] == 0) {
-                        X[rd] = 32;
-                    } else if (X[rs1][0]) {
-                        X[rd] = 0;
-                    } else if (X[rs1] == 32'h80000000) {
-                        X[rd] = 31;
-                    } else {
-                        unsigned<5> pos = 0;
-                        while (!X[rs1][pos] && pos < 32) {
-                            pos = pos + 1;
+                    unsigned<6> result = 32;
+                    unsigned<6> i = 0;
+
+                    while (i < 32) {
+                        if ((result == 32) &&
+                            (((X[rs1] >> i) & 1) != 0)) {
+                            result = i;
                         }
-                        X[rd] = pos;
+                        i = (unsigned<6>)(i + 1);
                     }
+
+                    X[rd] = result;
                 }
             }
         }
@@ -208,53 +366,64 @@ InstructionSet XCoreVBitmanip extends RV32I {
             encoding: 7'b0100010 :: 5'b00000 :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
             assembly: {"cv.fl1", "{name(rd)}, {name(rs1)}" };
             behavior: {
+                // Warning: UNTESTED
                 if (rd != 0) {
-                    if (X[rs1] == 0) {
-                        X[rd] = 32;
-                    } else if (X[rs1][31]) {
-                        X[rd] = 31;
-                    } else if (X[rs1] == 32'b1) {
-                        X[rd] = 0;
-                    } else {
-                        unsigned<5> pos = 31;
-                        while (!X[rs1][pos] && pos >= 0) {
-                            pos = pos - 1;
+                    unsigned<6> result = 32;
+                    unsigned<6> i = 0;
+
+                    while (i < 32) {
+                        if (((X[rs1] >> i) & 1) != 0) {
+                            result = i;
                         }
-                        X[rd] = pos;
+                        i = (unsigned<6>)(i + 1);
                     }
+
+                    X[rd] = result;
                 }
             }
         }
-        CV_CLB {
-            encoding: 7'b0100011 :: 5'b00000 :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
-            assembly: {"cv.clb", "{name(rd)}, {name(rs1)}" };
-            behavior: {
-                if (rd != 0) {
-                    // X[rd] = X[rs1][31] == 0 ? llvm.ctlz.i32(X[rs1]) : llvm.ctlz.i32(~X[rs1]):
-                    if (X[rs1] != 0) {
-                        X[rd] = 0;
-                    } else {
-                        unsigned<5> cnt = 0;
-                        while (X[rs1][31 - cnt] == X[rs1][31] && cnt < 32) {
-                            cnt = cnt + 1;
-                        }
-                        X[rd] = cnt - 1;
-                    }
-                }
-            }
-        }
+        // CV_CLB {
+        //     encoding: 7'b0100011 :: 5'b00000 :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
+        //     assembly: {"cv.clb", "{name(rd)}, {name(rs1)}" };
+        //     behavior: {
+        //         // Warning: UNTESTED
+        //         if (rd != 0) {
+        //             unsigned<6> result = 0;
+        //             unsigned<6> i = 1;
+        //             unsigned<1> leadingBit = X[rs1][31];
+        //             unsigned<1> scanning = 1;
+        //             if (X[rs1] != 0) {
+        //                 while (i < 32) {
+        //                     // Warning: Broken M2-ISA-R type inference?
+        //                     if (scanning &&
+        //                         (X[rs1][31 - i] == leadingBit)) {
+        //                         result = result + 1;
+        //                     } else {
+        //                         scanning = 0;
+        //                     }
+        //                     i = i + 1;
+        //                 }
+        //             }
+        //             X[rd] = result;
+        //         }
+        //     }
+        // }
         CV_CNT {
             encoding: 7'b0100100 :: 5'b00000 :: rs1[4:0] :: 3'b011 :: rd[4:0] :: 7'b0101011;
             assembly: {"cv.cnt", "{name(rd)}, {name(rs1)}" };
             behavior: {
+                // Warning: UNTESTED
                 if (rd != 0) {
-                    // X[rd] = llvm.ctpop.i32(X[rs1])
-                    // See: https://stackoverflow.com/questions/109023/count-the-number-of-set-bits-in-a-32-bit-integer
-                    unsigned<32> temp = X[rs1] - ((X[rs1] >> 1) & 0x55555555);        // add pairs of bits
-                    temp = (temp & 0x33333333) + ((temp >> 2) & 0x33333333);  // quads
-                    temp = (temp + (temp >> 4)) & 0x0F0F0F0F;        // groups of 8
-                    temp *= 0x01010101;                        // horizontal sum of bytes
-                    X[rd] = temp >> 24;               // return just that top byte (after truncating to 32-bit even when int is wider than uint32_t)
+                    unsigned<6> result = 0;
+                    unsigned<6> i = 0;
+
+                    while (i < 32) {
+                        result = (unsigned<6>)(result +
+                                 ((X[rs1] >> i) & 1));
+                        i = (unsigned<6>)(i + 1);
+                    }
+
+                    X[rd] = result;
                 }
             }
         }
